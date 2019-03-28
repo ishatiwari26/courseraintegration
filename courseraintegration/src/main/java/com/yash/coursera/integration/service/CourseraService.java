@@ -47,14 +47,13 @@ public class CourseraService {
 
 	String accessToken, refreshToken; 
 	
-	CommonUtils commonUtils=new CommonUtils();
-	
+	CommonUtils commonUtils=new CommonUtils();	
 	
 	public JSONObject getAccessToken(String code, RestTemplate restTemplate) {
 		HttpHeaders headers = new HttpHeaders();
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add(GlobalConstants.CODE_KEY, code);
 		map.add(GlobalConstants.GRANT_TYPE_KEY, authCodeParamValue);
 		map.add(GlobalConstants.REDIRECT_URI_KEY, callBackUri);
