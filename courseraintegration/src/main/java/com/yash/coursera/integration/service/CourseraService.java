@@ -49,10 +49,11 @@ public class CourseraService {
 	
 	CommonUtils commonUtils=new CommonUtils();
 	
+	
 	public JSONObject getAccessToken(String code, RestTemplate restTemplate) {
-		String access_token_url = getAuthTokenUri;
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add(GlobalConstants.CODE_KEY, code);
 		map.add(GlobalConstants.GRANT_TYPE_KEY, authCodeParamValue);
@@ -63,7 +64,7 @@ public class CourseraService {
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
-		ResponseEntity<String> response = restTemplate.exchange(access_token_url, HttpMethod.POST, request,
+		ResponseEntity<String> response = restTemplate.exchange(getAuthTokenUri, HttpMethod.POST, request,
 				String.class);
 		String body = response.getBody();
 		JSONObject jsonObj = new JSONObject(body);

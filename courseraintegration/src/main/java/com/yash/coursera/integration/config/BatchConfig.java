@@ -44,16 +44,11 @@ public class BatchConfig {
 	@Value("${limit.per.batch.read.operation}")
 	private Integer limitCountPerRead;
 
-	@Value("${OUTPUT_FILE}")
-	private String fileName;
-
 	@Value("${GET_PROGRAM_API}")
 	private String getProgramListApi;
 
 	@Value("${GET_CONTENTS_API}")
 	private String getContentsApi;
-	
-	private static String refreshToken;
 
 	@Value("${REFRESH_TOKEN}")
 	private String refreshTokenParamValue;
@@ -101,7 +96,7 @@ public class BatchConfig {
 	}
 
 	public ItemReader<Elements> reader() throws MalformedURLException {
-		ResponseReader reader = new ResponseReader(localContentApiUrl, GlobalConstants.REQUEST_METHOD, 0, this, limitCountPerRead);
+		ResponseReader reader = new ResponseReader(GlobalConstants.REQUEST_METHOD, 0, this, limitCountPerRead);
 		return reader;
 	}
 
@@ -111,34 +106,11 @@ public class BatchConfig {
 
 	public ItemWriter<List<SFLmsMapper>> writer() {
 		ResponseWriter writer = new ResponseWriter();
-		writer.setFileName(fileName);
 		return writer;
 	}
 
-	public JSONObject getAccessToken(String code, RestTemplate restTemplate) {
-		String access_token_url = getAuthTokenUri;
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.add(GlobalConstants.CODE_KEY, code);
-		map.add(GlobalConstants.GRANT_TYPE_KEY, authCodeParamValue);
-		map.add(GlobalConstants.REDIRECT_URI_KEY, callBackUri);
-		map.add(GlobalConstants.CLIENT_ID_KEY, clientId);
-		map.add(GlobalConstants.CLIENT_SECRET_KEY, clientSecret);
-		map.add(GlobalConstants.ACCESS_TYPE_KEY, accessTypeParamValue);
 
-		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-
-		ResponseEntity<String> response = restTemplate.exchange(access_token_url, HttpMethod.POST, request,
-				String.class);
-		String body = response.getBody();
-		// System.out.println("Access Token Response ---------" + response.getBody());
-		JSONObject jsonObj = new JSONObject(body);
-
-		return jsonObj;
-	}
-
-	public String getNewAccessToken() {
+	public String getNewAccessToken(String refreshToken) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
