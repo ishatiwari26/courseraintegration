@@ -140,10 +140,6 @@ public class ResponseWriter implements ItemWriter<List<SFLmsMapper>> {
 
 			currRow++;
 			Row row = sheet.createRow(currRow);
-
-			// "courseID", "providerID", "status", "title", "description", "thumbnailURI",
-			// "launchURL",
-			// "contentTitle", "contentID"
 			createStringCell(row, data.getCourseID(), 0);
 			createStringCell(row, data.getProviderID(), 1);
 			createStringCell(row, data.getStatus(), 2);
