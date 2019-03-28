@@ -106,7 +106,6 @@ public class ResponseReader implements ItemReader<Elements> {
 	}
 
 	public ApiResponse getContentsList(String queryParams) {
-		// System.out.println("newAccessToken>>" + accessToken);
 		ApiResponse response = null;
 		try {
 			if (accessToken == null) {
