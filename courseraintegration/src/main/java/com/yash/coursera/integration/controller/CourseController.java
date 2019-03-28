@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
@@ -21,14 +20,8 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,13 +50,21 @@ public class CourseController {
 
 	@Value("${GET_CODE_URI}")
 	private String getCodeUri;
+
+	@Value("${PROGRAM_OUTPUT_FILE}")
+	private String programFileName;
+
+	@Value("${CONTENT_OUTPUT_FILE}")
+	private String contentFileName;
 	
-	@Value("${OUTPUT_FILE}")
-	private String getOutputFilePath;
+	@Value("${GET_PROGRAM_API}")
+	private String getProgramListApi;
+
+	@Value("${GET_CONTENTS_API}")
+	private String getContentsApi;
 
 	String accessToken, refreshToken;
-	
-	
+
 	@Autowired
 	private JobLauncher jobLauncher;
 
@@ -71,10 +72,10 @@ public class CourseController {
 	BatchConfig config;
 
 	@Autowired
-	CourseraService courseraService=new CourseraService(); 
-	
-	CommonUtils commonUtils=new CommonUtils();
-	
+	CourseraService courseraService = new CourseraService();
+
+	CommonUtils commonUtils = new CommonUtils();
+
 	@ApiIgnore
 	@RequestMapping(value = "/callback", method = RequestMethod.GET)
 	public String callback(@RequestParam(required = false, name = GlobalConstants.CODE_KEY) String code,
@@ -86,7 +87,7 @@ public class CourseController {
 			accessToken = (String) JsonObject.get(GlobalConstants.ACCESS_TOKEN_KEY);
 			refreshToken = (String) JsonObject.get(GlobalConstants.REFRESH_TOKEN_KEY);
 			if (accessToken != "" && refreshToken != "")
-				commonUtils.writeToFile(accessToken, refreshToken); 
+				commonUtils.writeToFile(accessToken, refreshToken);
 		}
 		return "Tokens Generated: <br>AccessToken: " + accessToken + "<br> " + " RefreshToken: " + refreshToken;
 	}
@@ -113,16 +114,15 @@ public class CourseController {
 		try {
 			Map<String, String> tokensMap = FileOpUtils.readAccessToken();
 			if (tokensMap.get("access_token") == null || tokensMap.get("access_token") == "") {
-					response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
-							HttpStatus.UNAUTHORIZED);
-			}
-			else {
-				response = courseraService.callProgramsAPI(start, limit,tokensMap.get("access_token"));
+				response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
+						HttpStatus.UNAUTHORIZED);
+			} else {
+				response = courseraService.callProgramsAPI(start, limit, tokensMap.get("access_token"));
 			}
 		} catch (RestClientException e) {
 			try {
 				accessToken = courseraService.getNewAccessToken();
-				response = courseraService.callProgramsAPI(start, limit,accessToken);
+				response = courseraService.callProgramsAPI(start, limit, accessToken);
 			} catch (RestClientException ex) {
 				response = new ResponseEntity<>("Authorize client  and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);
@@ -153,17 +153,16 @@ public class CourseController {
 		try {
 			Map<String, String> tokensMap = FileOpUtils.readAccessToken();
 			if (tokensMap.get("access_token") == null || tokensMap.get("access_token") == "") {
-					response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
-							HttpStatus.UNAUTHORIZED);
-			}
-			else {
-				response = courseraService.callContentsAPI(start, limit,tokensMap.get("access_token"));
+				response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
+						HttpStatus.UNAUTHORIZED);
+			} else {
+				response = courseraService.callContentsAPI(start, limit, tokensMap.get("access_token"));
 			}
 
 		} catch (RestClientException e) {
 			try {
 				accessToken = courseraService.getNewAccessToken();
-				response = courseraService.callContentsAPI(start, limit,accessToken);
+				response = courseraService.callContentsAPI(start, limit, accessToken);
 			} catch (RestClientException ex) {
 				response = new ResponseEntity<>("Authorize client  and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);
@@ -179,32 +178,54 @@ public class CourseController {
 
 	}
 
-	@GetMapping(value = "/load")
-	public BatchStatus load() throws JobExecutionAlreadyRunningException, JobRestartException,
+	@GetMapping(value = "/loadContentAPI")
+	public BatchStatus loadContentAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
 		Map<String, JobParameter> maps = new HashMap<>();
 		maps.put("time", new JobParameter(new Date()));
 		JobExecution ex = null;
-		// JobParameters parameters = new JobParameters(maps);
-		// JobExecution jobExecution = jobLauncher.run(job, parameters);
-/*		BatchConfig config = new BatchConfig();
 
-		JobParameters parameters = new JobParameters(maps);
-		JobExecution jobExecution = jobLauncher.run(config.processJob(), parameters);*/
-		
-		// make unique JobParameters so now instance of job can be started
-				Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
-				confMap.put("time", new JobParameter(System.currentTimeMillis()));
-				JobParameters jobParameters = new JobParameters(confMap);
-				try {
-					ex = jobLauncher.run(config.processJob(), jobParameters);
-					System.out.println("Execution status----->" + ex.getStatus());
-				} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
-						| JobParametersInvalidException e) {
-					//
-					e.printStackTrace();
-				}
+		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
+		confMap.put("time", new JobParameter(System.currentTimeMillis()));
+		confMap.put("jobName", new JobParameter("loadContentAPI"));
+		confMap.put("fileName", new JobParameter(contentFileName));
+		confMap.put("apiUrl", new JobParameter(getContentsApi));
+		JobParameters jobParameters = new JobParameters(confMap);
+		try {
+			ex = jobLauncher.run(config.processJob(), jobParameters);
+			System.out.println("Execution status----->" + ex.getStatus());
+		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
+				| JobParametersInvalidException e) {
+			//
+			e.printStackTrace();
+		}
+
+		return ex.getStatus();
+	}
+
+	@GetMapping(value = "/loadProgramAPI")
+	public BatchStatus loadProgramAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+
+		Map<String, JobParameter> maps = new HashMap<>();
+		maps.put("time", new JobParameter(new Date()));
+		JobExecution ex = null;
+
+		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
+		confMap.put("time", new JobParameter(System.currentTimeMillis()));
+		confMap.put("jobName", new JobParameter("loadProgramAPI"));
+		confMap.put("fileName", new JobParameter(programFileName));
+		confMap.put("apiUrl", new JobParameter(getProgramListApi));
+		JobParameters jobParameters = new JobParameters(confMap);
+		try {
+			ex = jobLauncher.run(config.processJob(), jobParameters);
+			System.out.println("Execution status----->" + ex.getStatus());
+		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
+				| JobParametersInvalidException e) {
+			//
+			e.printStackTrace();
+		}
 
 		return ex.getStatus();
 	}

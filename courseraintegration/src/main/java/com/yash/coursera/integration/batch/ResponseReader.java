@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -34,11 +37,16 @@ public class ResponseReader implements ItemReader<Elements> {
 	private ApiResponse apiResponse;
 
 	BatchConfig jobConfigurer;
-
+	private JobExecution jobExecution;
 	private String accessToken, refreshToken;
+	
+	@BeforeStep
+	public void beforeStep(StepExecution stepExecution) {
+		jobExecution = stepExecution.getJobExecution();
+		apiUrl = jobExecution.getJobParameters().getString("apiUrl");
+	}
 
-	public ResponseReader(String apiUrl, String requestMethod, Integer jobCount, BatchConfig jobConfigurer, Integer limitCountPerRead) {
-		this.apiUrl = apiUrl;
+	public ResponseReader(String requestMethod, Integer jobCount, BatchConfig jobConfigurer, Integer limitCountPerRead) {
 		this.requestMethod = requestMethod;
 		this.jobCount = jobCount;
 		index = 0;
@@ -113,11 +121,12 @@ public class ResponseReader implements ItemReader<Elements> {
 
 		} catch (RestClientException e) {
 			try {
-				accessToken = jobConfigurer.getNewAccessToken();
+				accessToken = jobConfigurer.getNewAccessToken(refreshToken);
 				response = callContentsAPI(queryParams);
 			} catch (RestClientException ex) {
 				// to cover condition if exception occurs in new access token generation through
 				// refresh token itsel
+				throw ex;
 			}
 
 		}

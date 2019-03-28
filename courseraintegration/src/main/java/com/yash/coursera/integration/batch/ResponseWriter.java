@@ -14,20 +14,19 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.yash.coursera.integration.model.SFLmsMapper;
 
 @Component
 public class ResponseWriter implements ItemWriter<List<SFLmsMapper>> {
-	
+
 	private String fileName;
-	
 	private static final String[] HEADERS = { "courseID", "providerID", "status", "title", "description",
 			"thumbnailURI", "launchURL", "contentTitle", "contentID" };
 
@@ -35,6 +34,7 @@ public class ResponseWriter implements ItemWriter<List<SFLmsMapper>> {
 	private Workbook workbook;
 	private CellStyle dataCellStyle;
 	private int currRow = 0;
+	private JobExecution jobExecution;
 
 	private void addHeaders(Sheet sheet) {
 
@@ -100,7 +100,8 @@ public class ResponseWriter implements ItemWriter<List<SFLmsMapper>> {
 	@BeforeStep
 	public void beforeStep(StepExecution stepExecution) {
 		System.out.println("Calling beforeStep");
-
+		jobExecution = stepExecution.getJobExecution();
+		fileName = jobExecution.getJobParameters().getString("fileName");
 		String dateTime = DateFormatUtils.format(Calendar.getInstance(), "yyyyMMdd_HHmmss");
 		outputFilename = fileName;
 
@@ -146,8 +147,8 @@ public class ResponseWriter implements ItemWriter<List<SFLmsMapper>> {
 			createStringCell(row, data.getCourseID(), 0);
 			createStringCell(row, data.getProviderID(), 1);
 			createStringCell(row, data.getStatus(), 2);
-			createStringCell(row, data.getTitle().getLocale()  + "," + data.getTitle().getValue(), 3);
-			createStringCell(row, data.getTitle().getLocale()  + "," + data.getDescription().getValue(), 4);
+			createStringCell(row, data.getTitle().getValue(), 3);
+			createStringCell(row, data.getDescription().getValue(), 4);
 			createStringCell(row, data.getThumbnailURI(), 5);
 			createStringCell(row, data.getLaunchURL(), 6);
 			createStringCell(row, data.getContentTitle(), 7);
