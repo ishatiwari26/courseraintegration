@@ -71,7 +71,7 @@ job5_schedule varchar(255),
 job6_schedule varchar(255),
 org_id INTEGER REFERENCES courseraintegration_schema.config(org_id),
 PRIMARY KEY (org_id));
-#############################
+
 
 
 
