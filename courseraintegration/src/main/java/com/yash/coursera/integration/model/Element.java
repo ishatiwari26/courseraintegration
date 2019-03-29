@@ -24,5 +24,10 @@ public class Element {
 	private Object extraMetadata;
 	private String contentType;
 	private List<Instructor> instructors;
+	
+	private String fullName;
+	private String externalId;
+	private String email;
+	private String programId;
 
 }

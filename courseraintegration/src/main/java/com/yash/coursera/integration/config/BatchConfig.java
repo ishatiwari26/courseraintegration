@@ -24,6 +24,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.yash.coursera.integration.batch.InvitationReader;
+import com.yash.coursera.integration.batch.InvitationWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.batch.ResponseWriter;
@@ -73,6 +75,12 @@ public class BatchConfig {
 
 	@Value("${GET_CODE_URI}")
 	private String getCodeUri;
+
+/*	@Value("${INVITATION_OUTPUT_FILE}")
+	private String fileName;*/
+
+	@Value("${GET_LOCAL_INVITATION_URL}")
+	private String localInvitationApiUrl;
 
 	@Autowired
 	private JobBuilderFactory jobs;
@@ -129,12 +137,48 @@ public class BatchConfig {
 		writeToFile(accessToken, refreshToken);
 		return accessToken;
 	}
-	
+
 	private static void writeToFile(String accessToken, String refreshToken) {
 		String[] str = new String[] { GlobalConstants.ACCESS_TOKEN_KEY + "=" + accessToken,
 				GlobalConstants.REFRESH_TOKEN_KEY + "=" + refreshToken };
 		FileOpUtils.writeToFile(str);
 	}
+
+
+
+
+	public Job processInviteJob() {
+		return jobs.get("invitation").incrementer(new RunIdIncrementer()).flow(sendInviteStep()).end().build();
+	}
+
+	public Step sendInviteStep() {
+
+		Step stepInviteApiCall = null;
+		try {
+			stepInviteApiCall = stepBuilderFactory.get(GlobalConstants.STEP_NAME).allowStartIfComplete(false)
+					.<Elements, Elements>chunk(1).reader(inviteReader()).writer(inviteWriter()).build();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+
+		return stepInviteApiCall;
+	}
+
+	public ItemReader<Elements> inviteReader() throws MalformedURLException {
+		InvitationReader reader = new InvitationReader(localInvitationApiUrl, "POST");
+		return reader;
+	}
+
+	public ItemWriter<Elements> inviteWriter() {
+		InvitationWriter writer = new InvitationWriter();
+		return writer;
+	}
+
+
+
+
+
+
 
 
 }

@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
+import com.yash.coursera.integration.model.User;
 
 @Service
 public class CourseraService {
@@ -44,6 +45,9 @@ public class CourseraService {
 
 	@Value("${AUTH_TOKEN_URI}")
 	private String getAuthTokenUri;
+
+	@Value("${GET_INVITATION_API}")
+	private String inviteApiUrl;
 
 	String accessToken, refreshToken;
 
@@ -107,6 +111,17 @@ public class CourseraService {
 		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 		ResponseEntity<String> response = restTemplate.exchange(getContentsApi + queryParams, HttpMethod.GET, entity,
 				String.class);
+		return response;
+	}
+
+	public ResponseEntity<String> postInvitation(String programId, String accessToken, User user) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + accessToken);
+		String url = inviteApiUrl + programId + "/invitations";
+
+		HttpEntity<User> entity = new HttpEntity<User>(user, headers);
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 		return response;
 	}
 
