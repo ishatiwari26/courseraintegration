@@ -191,9 +191,6 @@ public class CourseController {
 	@GetMapping(value = "/loadContentAPI")
 	public BatchStatus loadContentAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-
-		/*Map<String, JobParameter> maps = new HashMap<>();
-		maps.put("time", new JobParameter(new Date()));*/
 		JobExecution ex = null;
 
 		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
@@ -215,8 +212,6 @@ public class CourseController {
 	public BatchStatus loadProgramAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
-		/*Map<String, JobParameter> maps = new HashMap<>();
-		maps.put("time", new JobParameter(new Date()));*/
 		JobExecution ex = null;
 
 		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
