@@ -5,11 +5,21 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.HashMap;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameter;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.job.SimpleJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,7 +28,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -57,6 +66,9 @@ public class CourseControllerTests {
 	@MockBean	
 	BatchConfig config;
 
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+	
 	@Test
 	public void shouldGenerateToken() throws Exception {
 		 mockMvc.perform(get("/generateToken")).andExpect(status().is(302));
@@ -130,6 +142,54 @@ public class CourseControllerTests {
 		mockMvc.perform(get("/getContentsList").contentType("application/json").param("start", "0").param("limit", "10"))
 				.andExpect(status().isOk());
 	}*/
+	
+	@Test
+	public void shouldLoadContentAPI() throws Exception{
+		Mockito.mock(JobParameter.class);		
+		Mockito.mock(JobParameters.class);
+		JobExecution jobExecution = new JobExecution(1L);
+		jobExecution.setStatus(BatchStatus.COMPLETED);
+		Mockito.mock(HashMap.class);
+		Job job = new SimpleJob();
+		Mockito.when(config.processJob()).thenReturn(job);
+		
+		Mockito.when(jobLauncher.run(Mockito.any(Job.class),Mockito.any(JobParameters.class))).thenReturn(jobExecution);
+		
+		mockMvc.perform(get("/loadContentAPI").contentType("application/json"))
+		.andExpect(status().isOk());
+	}
+	/*@Test
+	public void shouldThrowExeption_WhenLoadContentAPI() throws Exception{
+		
+		Mockito.mock(JobParameter.class);		
+//		Mockito.mock(JobParameters.class);
+		JobParameters jobParams=new JobParameters(Mockito.mock(HashMap.class));
+		JobExecution jobExecution = new JobExecution(1L);
+		jobExecution.setStatus(BatchStatus.FAILED);
+		Mockito.mock(HashMap.class);
+		Job job = new SimpleJob();
+		Mockito.when(config.processJob()).thenReturn(job);
+		
+		Mockito.when(jobLauncher.run(Mockito.any(Job.class),Mockito.any(JobParameters.class))).thenReturn(jobExecution);
+		
+		mockMvc.perform(get("/loadContentAPI").contentType("application/json"))
+		.andExpect(status().isInternalServerError());
+	}*/
+	@Test
+	public void shouldLoadProgramAPI() throws Exception{
+		Mockito.mock(JobParameter.class);		
+		Mockito.mock(JobParameters.class);
+		JobExecution jobExecution = new JobExecution(1L);
+		jobExecution.setStatus(BatchStatus.COMPLETED);
+		Mockito.mock(HashMap.class);
+		Job job = new SimpleJob();
+		Mockito.when(config.processJob()).thenReturn(job);
+		
+		Mockito.when(jobLauncher.run(Mockito.any(Job.class),Mockito.any(JobParameters.class))).thenReturn(jobExecution);
+		
+		mockMvc.perform(get("/loadProgramAPI").contentType("application/json"))
+		.andExpect(status().isOk());
+	}
 	private JSONObject getDumyJSONObject() {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("name", "YASH Technologies Learning Program");

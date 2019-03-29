@@ -182,8 +182,8 @@ public class CourseController {
 	public BatchStatus loadContentAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
-		Map<String, JobParameter> maps = new HashMap<>();
-		maps.put("time", new JobParameter(new Date()));
+		/*Map<String, JobParameter> maps = new HashMap<>();
+		maps.put("time", new JobParameter(new Date()));*/
 		JobExecution ex = null;
 
 		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
@@ -194,12 +194,10 @@ public class CourseController {
 		JobParameters jobParameters = new JobParameters(confMap);
 		try {
 			ex = jobLauncher.run(config.processJob(), jobParameters);
-			System.out.println("Execution status----->" + ex.getStatus());
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
 			e.printStackTrace();
 		}
-
 		return ex.getStatus();
 	}
 
@@ -207,8 +205,8 @@ public class CourseController {
 	public BatchStatus loadProgramAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
-		Map<String, JobParameter> maps = new HashMap<>();
-		maps.put("time", new JobParameter(new Date()));
+		/*Map<String, JobParameter> maps = new HashMap<>();
+		maps.put("time", new JobParameter(new Date()));*/
 		JobExecution ex = null;
 
 		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
@@ -219,12 +217,10 @@ public class CourseController {
 		JobParameters jobParameters = new JobParameters(confMap);
 		try {
 			ex = jobLauncher.run(config.processJob(), jobParameters);
-			System.out.println("Execution status----->" + ex.getStatus());
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
 			e.printStackTrace();
 		}
-
 		return ex.getStatus();
 	}
 
