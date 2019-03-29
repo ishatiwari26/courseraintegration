@@ -12,13 +12,14 @@ DROP TABLE IF EXISTS courseraintegration_schema.program;
 CREATE TABLE  courseraintegration_schema.program (
     name varchar(255) ,
     tagline varchar(255) ,
-    content_id varchar(255) NOT NULL,
-    content_type varchar(255) ,
-    program_id varchar(255) NOT NUll,
-	url varchar(255) ,
-	created_date Date,
-    PRIMARY KEY (program_id)
+    contentId varchar(255) NOT NULL,
+    contentType varchar(255) ,
+    id varchar(255) NOT NUll,
+       url varchar(255) ,
+       created_date Date,
+    PRIMARY KEY (id)
 );
+
 
 ******************** Content API Table ***********************************
 
@@ -26,18 +27,18 @@ DROP TABLE IF EXISTS courseraintegration_schema.content;
 
 CREATE TABLE courseraintegration_schema.content(
 name varchar(255) ,
-logo_url varchar(255) ,
-content_id varchar(255) not Null,
+logoUrl varchar(255) ,
+contentId varchar(255) not Null,
 description text ,
-content_url varchar(255) ,
-program_id varchar(255) NOT NULL,
-language_code varchar(255) ,
-type_name varchar(255) ,
-content_type varchar(255) ,
+contentUrl varchar(255) ,
+programId varchar(255) NOT NULL,
+languageCode varchar(255) ,
+typeName varchar(255) ,
+contentType varchar(255) ,
 tagline varchar(255) ,
-photo_url varchar(255) ,
+photoUrl varchar(255) ,
 created_date Date,
-PRIMARY KEY (content_id)
+PRIMARY KEY (contentid)
 );
 
 ******************** config Table ***********************************
