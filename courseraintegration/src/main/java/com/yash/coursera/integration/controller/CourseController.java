@@ -21,8 +21,11 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,6 +38,7 @@ import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
+import com.yash.coursera.integration.model.User;
 import com.yash.coursera.integration.service.CourseraService;
 
 import io.swagger.annotations.ApiOperation;
@@ -56,12 +60,18 @@ public class CourseController {
 
 	@Value("${CONTENT_OUTPUT_FILE}")
 	private String contentFileName;
-	
+
 	@Value("${GET_PROGRAM_API}")
 	private String getProgramListApi;
 
 	@Value("${GET_CONTENTS_API}")
 	private String getContentsApi;
+
+	@Value("${INVITATION_OUTPUT_FILE}")
+	private String invitationFileName;
+
+	@Value("${GET_INVITATION_API}")
+	private String getInvitationApi;
 
 	String accessToken, refreshToken;
 
@@ -180,7 +190,7 @@ public class CourseController {
 
 	@GetMapping(value = "/loadContentAPI")
 	public BatchStatus loadContentAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
-			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
 		/*Map<String, JobParameter> maps = new HashMap<>();
 		maps.put("time", new JobParameter(new Date()));*/
@@ -203,7 +213,7 @@ public class CourseController {
 
 	@GetMapping(value = "/loadProgramAPI")
 	public BatchStatus loadProgramAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
-			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
 		/*Map<String, JobParameter> maps = new HashMap<>();
 		maps.put("time", new JobParameter(new Date()));*/
@@ -222,6 +232,70 @@ public class CourseController {
 			e.printStackTrace();
 		}
 		return ex.getStatus();
+	}
+
+	@GetMapping(value = "/loadInvitation")
+	public BatchStatus loadInvitationAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
+	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+
+		Map<String, JobParameter> maps = new HashMap<>();
+		maps.put("time", new JobParameter(new Date()));
+		JobExecution ex = null;
+
+		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
+		confMap.put("time", new JobParameter(System.currentTimeMillis()));
+		confMap.put("jobName", new JobParameter("loadInvitationAPI"));
+		confMap.put("fileName", new JobParameter(invitationFileName));
+		confMap.put("apiUrl", new JobParameter(getInvitationApi));
+		JobParameters jobParameters = new JobParameters(confMap);
+
+		try {
+			ex = jobLauncher.run(config.processInviteJob(), jobParameters);
+			System.out.println("Execution status----->" + ex.getStatus());
+		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
+				| JobParametersInvalidException e) {
+			//
+			e.printStackTrace();
+		}
+
+		return ex.getStatus();
+	}
+
+	@ApiOperation(value = "send invite to users", response = List.class)
+
+	@ApiResponses(value = { @ApiResponse(code = 201, message = "Successfully send invite"),
+
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+
+	@RequestMapping(value = "/invitation/{programId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<String> getInviteList(@PathVariable("programId") String programId,
+			@RequestBody User userInvitation, HttpServletRequest req, HttpServletResponse res) {
+		ResponseEntity<String> response = null;
+		Map<String, String> tokensMap = FileOpUtils.readAccessToken();
+		try {
+
+			if (tokensMap.get("access_token") == null || tokensMap.get("access_token") == "") {
+				response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
+						HttpStatus.UNAUTHORIZED);
+			} else {
+				response = courseraService.postInvitation(programId, tokensMap.get("access_token"), userInvitation);
+			}
+
+		} catch (RestClientException e) {
+			try {
+				accessToken = courseraService.getNewAccessToken(tokensMap.get("refresh_token"));
+				response = courseraService.postInvitation(programId, accessToken, userInvitation);
+			} catch (RestClientException ex) {
+				response = new ResponseEntity<>("Authorize client  and generate token by calling /generateToken API",
+						HttpStatus.UNAUTHORIZED);
+			}
+		}
+		return response;
 	}
 
 }
