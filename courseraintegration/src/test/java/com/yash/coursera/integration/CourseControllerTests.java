@@ -61,7 +61,7 @@ public class CourseControllerTests {
 	}
 
 	@Test
-	public void shouldCallBackWhenCodeIsNotNull() throws Exception {
+	public void shouldCallBack() throws Exception {
 		String code = "testCode";
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("access_token", "testAccessToken");

@@ -111,8 +111,8 @@ public class CourseController {
 		ResponseEntity<String> response = null;
 		start = start != null ? start : 0;
 		limit = limit != null && limit > 0 ? limit : 100;
+		Map<String, String> tokensMap = FileOpUtils.readAccessToken();
 		try {
-			Map<String, String> tokensMap = FileOpUtils.readAccessToken();
 			if (tokensMap.get("access_token") == null || tokensMap.get("access_token") == "") {
 				response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);
@@ -121,7 +121,7 @@ public class CourseController {
 			}
 		} catch (RestClientException e) {
 			try {
-				accessToken = courseraService.getNewAccessToken();
+				accessToken = courseraService.getNewAccessToken(tokensMap.get("refresh_token"));
 				response = courseraService.callProgramsAPI(start, limit, accessToken);
 			} catch (RestClientException ex) {
 				response = new ResponseEntity<>("Authorize client  and generate token by calling /generateToken API",
@@ -150,8 +150,8 @@ public class CourseController {
 		ResponseEntity<String> response = null;
 		start = start != null ? start : 0;
 		limit = limit != null && limit > 0 ? limit : 100;
+		Map<String, String> tokensMap = FileOpUtils.readAccessToken();
 		try {
-			Map<String, String> tokensMap = FileOpUtils.readAccessToken();
 			if (tokensMap.get("access_token") == null || tokensMap.get("access_token") == "") {
 				response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);
@@ -161,7 +161,7 @@ public class CourseController {
 
 		} catch (RestClientException e) {
 			try {
-				accessToken = courseraService.getNewAccessToken();
+				accessToken = courseraService.getNewAccessToken(tokensMap.get("refresh_token"));
 				response = courseraService.callContentsAPI(start, limit, accessToken);
 			} catch (RestClientException ex) {
 				response = new ResponseEntity<>("Authorize client  and generate token by calling /generateToken API",
@@ -197,7 +197,6 @@ public class CourseController {
 			System.out.println("Execution status----->" + ex.getStatus());
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
-			//
 			e.printStackTrace();
 		}
 
@@ -223,7 +222,6 @@ public class CourseController {
 			System.out.println("Execution status----->" + ex.getStatus());
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
-			//
 			e.printStackTrace();
 		}
 

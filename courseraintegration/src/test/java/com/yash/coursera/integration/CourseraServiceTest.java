@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.CommonUtils;
+import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.service.CourseraService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,44 +47,42 @@ public class CourseraServiceTest {
 	@Mock
 	RestTemplate restTemplate;
 
-	protected MediaType mediaType;
-
-	public void setMediaType(MediaType mediaType) {
-		this.mediaType = mediaType;
-	}
-
-	protected MultiValueMap<String, String> multiValueMap;
-
-	public void setMultiValueMap(MultiValueMap<String, String> multiValueMap) {
-		this.multiValueMap = multiValueMap;
-	}
-
 	@Before
 	public void setUp() {
-		ReflectionTestUtils.setField(courseraService, "getAuthTokenUri",
-				"https://accounts.coursera.org/oauth2/v1/token");
+		ReflectionTestUtils.setField(courseraService, "getAuthTokenUri","https://accounts.coursera.org/oauth2/v1/token");
 	}
 
 	@Test
-	public void shouldGenerateAccessToken() throws Exception {
+	public void shouldGenerate_AccessToken() throws Exception {
 		String code = "testCode";
 		JSONObject tokenJSON = new JSONObject();
 		tokenJSON.put("access_token", "testAccessToken");
 		tokenJSON.put("refresh_token", "testRefreshToken");
-
 		ResponseEntity<String> response =Mockito.mock(ResponseEntity.class);
 		Mockito.when(response.getBody()).thenReturn(tokenJSON.toString());
-
+		
 		HttpHeaders headers = Mockito.mock(HttpHeaders.class);
-		Mockito.when(headers.getContentType()).thenReturn(this.mediaType);
 		MultiValueMap<String, String> map = Mockito.mock(MultiValueMap.class);
-		doNothing().when(map).add(Mockito.anyString(), Mockito.anyString());
-
 		HttpEntity<MultiValueMap<String, String>> request = Mockito.mock(HttpEntity.class);
-
+		
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-
 		courseraService.getAccessToken(code, restTemplate);
+	}
+	@Test
+	public void shouldGenerate_NewAccessToken_ByRefreshToken() throws Exception {
+		String refreshToken = "testRefreshToken";
+		JSONObject tokenJSON = new JSONObject();
+		tokenJSON.put("access_token", "testAccessToken");
+		tokenJSON.put("refresh_token", "testRefreshToken");
+		ResponseEntity<String> response =Mockito.mock(ResponseEntity.class);
+		Mockito.when(response.getBody()).thenReturn(tokenJSON.toString());
+		HttpHeaders headers = Mockito.mock(HttpHeaders.class);
+		MultiValueMap<String, String> map = Mockito.mock(MultiValueMap.class);
+		HttpEntity<?> request = Mockito.mock(HttpEntity.class);
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
+				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
+		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
+		courseraService.getNewAccessToken(refreshToken);
 	}
 }
