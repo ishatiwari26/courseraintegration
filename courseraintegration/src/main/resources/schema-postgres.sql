@@ -19,9 +19,7 @@ LAUNCH_URL varchar(255),
 ID varchar(255) NOT NULL,
 THUMBNAIL_URI varchar(255),
 created_date Date,
-PRIMARY KEY (CONTENT_ID)
-       created_date Date,
-    PRIMARY KEY (id)
+PRIMARY KEY (ID)
 );
 
 
