@@ -18,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.config.BatchConfig;
@@ -101,19 +103,19 @@ public class CourseControllerTests {
 		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
-	public void shouldReturnProgramList() throws Exception {
+	/*public void shouldReturnProgramList() throws Exception {
 		JSONObject dumyJSON = getDumyJSONObject();
 		ResponseEntity<String> response = new ResponseEntity(dumyJSON, HttpStatus.OK);
 		when(courseraService.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenReturn(response);
 		mockMvc.perform(get("/getProgramList").contentType("application/json").param("start", "0").param("limit", "10"))
 				.andExpect(status().isOk());
-	}
-	/*@Test
+	}*/
+	@Test
 	public void shouldRegenerateTokenWhileGotExceptionInProgramList() throws Exception {
 		when(courseraService.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenThrow(RestClientException.class);
 		mockMvc.perform(get("/getProgramList").contentType("application/json").param("start", "0").param("limit", "10"))
-				.andExpect(status().is(401));
-	}*/
+				.andExpect(status().isOk());
+	}
 	@Test
 	public void shouldReturnContentList() throws Exception {
 		JSONObject dumyJSON = getDumyJSONObject();
@@ -126,7 +128,7 @@ public class CourseControllerTests {
 	public void shouldRegenerateTokenWhileGotExceptionInContentList() throws Exception {
 		when(courseraService.callContentsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenThrow(RestClientException.class);
 		mockMvc.perform(get("/getContentsList").contentType("application/json").param("start", "0").param("limit", "10"))
-				.andExpect(status().is(401));
+				.andExpect(status().isOk());
 	}*/
 	private JSONObject getDumyJSONObject() {
 		JSONObject jsonObj = new JSONObject();

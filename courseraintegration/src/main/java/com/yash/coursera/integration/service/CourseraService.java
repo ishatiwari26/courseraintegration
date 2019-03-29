@@ -45,13 +45,13 @@ public class CourseraService {
 	@Value("${AUTH_TOKEN_URI}")
 	private String getAuthTokenUri;
 
-	String accessToken, refreshToken; 
-	
-	CommonUtils commonUtils=new CommonUtils();	
+	String accessToken, refreshToken;
+
+	CommonUtils commonUtils = new CommonUtils();
 	RestTemplate restTemplate = new RestTemplate();
-	
+	HttpHeaders headers = new HttpHeaders();
+
 	public JSONObject getAccessToken(String code, RestTemplate restTemplate) {
-		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add(GlobalConstants.CODE_KEY, code);
@@ -70,9 +70,8 @@ public class CourseraService {
 
 		return jsonObj;
 	}
-	
+
 	public String getNewAccessToken(String refreshToken) {
-		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add(GlobalConstants.GRANT_TYPE_KEY, refreshTokenParamValue);
@@ -81,7 +80,7 @@ public class CourseraService {
 		map.add(GlobalConstants.CLIENT_SECRET_KEY, clientSecret);
 
 		HttpEntity<?> request = new HttpEntity<Object>(map, headers);
-		
+
 		ResponseEntity<String> response = restTemplate.exchange(getAuthTokenUri, HttpMethod.POST, request,
 				String.class);
 		String body = response.getBody();
@@ -90,28 +89,23 @@ public class CourseraService {
 		commonUtils.writeToFile(accessToken, refreshToken);
 		return accessToken;
 	}
-	
+
 	public ResponseEntity<String> callProgramsAPI(Integer start, Integer limit, String accessToken) {
-		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + accessToken);
-		String url = getProgramListApi;
 		String queryParams = "?" + GlobalConstants.START + "=" + start + "&" + GlobalConstants.LIMIT + "=" + limit;
 
 		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = restTemplate.exchange(url + queryParams, HttpMethod.GET, entity,
+		ResponseEntity<String> response = restTemplate.exchange(getProgramListApi + queryParams, HttpMethod.GET, entity,
 				String.class);
 		return response;
 	}
+
 	public ResponseEntity<String> callContentsAPI(Integer start, Integer limit, String accessToken) {
-		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + accessToken);
-		String url = getContentsApi;
 		String queryParams = "?" + GlobalConstants.START + "=" + start + "&" + GlobalConstants.LIMIT + "=" + limit;
 
 		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = restTemplate.exchange(url + queryParams, HttpMethod.GET, entity,
+		ResponseEntity<String> response = restTemplate.exchange(getContentsApi + queryParams, HttpMethod.GET, entity,
 				String.class);
 		return response;
 	}
