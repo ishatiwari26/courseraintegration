@@ -10,12 +10,16 @@ DROP SCHEMA IF EXISTS courseraintegration_schema;
 DROP TABLE IF EXISTS courseraintegration_schema.program;
 
 CREATE TABLE  courseraintegration_schema.program (
-    name varchar(255) ,
-    tagline varchar(255) ,
-    contentId varchar(255) NOT NULL,
-    contentType varchar(255) ,
-    id varchar(255) NOT NUll,
-       url varchar(255) ,
+CONTENT_ID varchar(255) not Null,
+CONTENT_TYPE varchar(255) not Null,
+TITLE VARCHAR(255) NOT NULL,
+PROVIDER_ID VARCHAR(255) NOT NULL,
+STATUS VARCHAR(20),
+LAUNCH_URL varchar(255),
+ID varchar(255) NOT NULL,
+THUMBNAIL_URI varchar(255),
+created_date Date,
+PRIMARY KEY (CONTENT_ID)
        created_date Date,
     PRIMARY KEY (id)
 );
@@ -26,19 +30,17 @@ CREATE TABLE  courseraintegration_schema.program (
 DROP TABLE IF EXISTS courseraintegration_schema.content;
 
 CREATE TABLE courseraintegration_schema.content(
-name varchar(255) ,
-logoUrl varchar(255) ,
-contentId varchar(255) not Null,
-description text ,
-contentUrl varchar(255) ,
-programId varchar(255) NOT NULL,
-languageCode varchar(255) ,
-typeName varchar(255) ,
-contentType varchar(255) ,
-tagline varchar(255) ,
-photoUrl varchar(255) ,
+CONTENT_ID varchar(255) not Null,
+CONTENT_TYPE varchar(255) not Null,
+TITLE VARCHAR(255) NOT NULL,
+PROVIDER_ID VARCHAR(255) NOT NULL,
+STATUS VARCHAR(20),
+DESCRIPTION varchar(255),
+LAUNCH_URL varchar(255),
+PROGRAM_ID varchar(255) NOT NULL,
+THUMBNAIL_URI varchar(255),
 created_date Date,
-PRIMARY KEY (contentid)
+PRIMARY KEY (CONTENT_ID)
 );
 
 ******************** config Table ***********************************
