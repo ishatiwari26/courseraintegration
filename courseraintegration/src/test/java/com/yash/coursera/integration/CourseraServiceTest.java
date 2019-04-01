@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.CommonUtils;
+import com.yash.coursera.integration.model.User;
 import com.yash.coursera.integration.service.CourseraService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -104,5 +105,15 @@ public class CourseraServiceTest {
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
 		courseraService.callContentsAPI(Mockito.any(Integer.class), Mockito.any(Integer.class), accessToken);
+	}
+	@SuppressWarnings("unchecked")
+	@Test
+	public void shouldPostUserInvitation(){
+		String accessToken = "testAccessToken";
+		ResponseEntity<String> response = Mockito.mock(ResponseEntity.class);
+		Mockito.mock(HttpEntity.class);
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
+				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
+		courseraService.postInvitation(Mockito.any(String.class), accessToken, Mockito.any(User.class));
 	}
 }

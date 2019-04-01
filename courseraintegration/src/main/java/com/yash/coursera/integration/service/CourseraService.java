@@ -115,12 +115,10 @@ public class CourseraService {
 	}
 
 	public ResponseEntity<String> postInvitation(String programId, String accessToken, User user) {
-		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + accessToken);
 		String url = inviteApiUrl + programId + "/invitations";
 
 		HttpEntity<User> entity = new HttpEntity<User>(user, headers);
-		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 		return response;
 	}

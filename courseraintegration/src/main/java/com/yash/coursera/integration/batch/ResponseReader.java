@@ -40,6 +40,7 @@ public class ResponseReader implements ItemReader<Elements> {
 	private JobExecution jobExecution;
 	private String accessToken, refreshToken;
 	
+	
 	@BeforeStep
 	public void beforeStep(StepExecution stepExecution) {
 		jobExecution = stepExecution.getJobExecution();

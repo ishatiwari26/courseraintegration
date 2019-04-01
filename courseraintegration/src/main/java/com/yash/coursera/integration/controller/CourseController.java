@@ -232,9 +232,6 @@ public class CourseController {
 	@GetMapping(value = "/loadInvitation")
 	public BatchStatus loadInvitationAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-
-		Map<String, JobParameter> maps = new HashMap<>();
-		maps.put("time", new JobParameter(new Date()));
 		JobExecution ex = null;
 
 		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
@@ -246,13 +243,10 @@ public class CourseController {
 
 		try {
 			ex = jobLauncher.run(config.processInviteJob(), jobParameters);
-			System.out.println("Execution status----->" + ex.getStatus());
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
-			//
 			e.printStackTrace();
 		}
-
 		return ex.getStatus();
 	}
 
