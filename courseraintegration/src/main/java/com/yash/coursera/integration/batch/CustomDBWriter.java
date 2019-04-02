@@ -32,6 +32,6 @@ public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 	@BeforeStep
 	public void beforeStep(StepExecution stepExecution) {
 		jobExecution = stepExecution.getJobExecution();
-		jobName = jobExecution.getJobParameters().getString("apiUrl");
+		jobName = jobExecution.getJobParameters().getString("jobName");
 	}
 }
