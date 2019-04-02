@@ -22,7 +22,6 @@ import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.batch.ResponseWriter;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
-import com.yash.coursera.integration.helper.BatchConfigComponent;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.Elements;
 import com.yash.coursera.integration.model.SFLmsMapper;
@@ -30,48 +29,8 @@ import com.yash.coursera.integration.service.CourseraService;
 
 @Component
 public class BatchConfig {
-
-	@Autowired
-	StepBuilderFactory stepBuilderFactory;
-	
-	@Autowired
-	CourseraAPIDataDao dao;
-
-	@Value("${GET_LOCAL_CONTENT_URL}")
-	private String localContentApiUrl;
-
 	@Value("${limit.per.batch.read.operation}")
 	private Integer limitCountPerRead;
-
-	@Value("${GET_PROGRAM_API}")
-	private String getProgramListApi;
-
-	@Value("${GET_CONTENTS_API}")
-	private String getContentsApi;
-
-	@Value("${REFRESH_TOKEN}")
-	private String refreshTokenParamValue;
-
-	@Value("${ACCESS_TYPE}")
-	private String accessTypeParamValue;
-
-	@Value("${CLIENT_SECRET}")
-	private String clientSecret;
-
-	@Value("${CLIENT_ID}")
-	private String clientId;
-
-	@Value("${CALLBACK_URI}")
-	private String callBackUri;
-
-	@Value("${AUTHORIZATION_CODE}")
-	private String authCodeParamValue;
-
-	@Value("${AUTH_TOKEN_URI}")
-	private String getAuthTokenUri;
-
-	@Value("${GET_CODE_URI}")
-	private String getCodeUri;
 
 	@Value("${GET_LOCAL_INVITATION_URL}")
 	private String localInvitationApiUrl;
@@ -81,6 +40,12 @@ public class BatchConfig {
 	
 	@Autowired
 	CourseraService courseraService;
+	
+	@Autowired
+	StepBuilderFactory stepBuilderFactory;
+	
+	@Autowired
+	CourseraAPIDataDao dao;
 	
 	public Job processJob() {
 		return jobs.get("processJob").incrementer(new RunIdIncrementer()).flow(getStep()).end().build();
