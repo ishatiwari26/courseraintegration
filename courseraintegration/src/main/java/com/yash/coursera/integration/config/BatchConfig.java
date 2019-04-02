@@ -26,6 +26,7 @@ import com.yash.coursera.integration.helper.BatchConfigComponent;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.Elements;
 import com.yash.coursera.integration.model.SFLmsMapper;
+import com.yash.coursera.integration.service.CourseraService;
 
 @Component
 public class BatchConfig {
@@ -79,8 +80,8 @@ public class BatchConfig {
 	private JobBuilderFactory jobs;
 	
 	@Autowired
-	BatchConfigComponent batchConfigComponent;
-
+	CourseraService courseraService;
+	
 	public Job processJob() {
 		return jobs.get("processJob").incrementer(new RunIdIncrementer()).flow(getStep()).end().build();
 	}
@@ -146,7 +147,7 @@ public class BatchConfig {
 	}
 
 	public String getNewToken(String refreshToken) {
-		return batchConfigComponent.callGetNewAccessToken(refreshToken);
+		return courseraService.getNewAccessToken(refreshToken);
 	}
 
 }
