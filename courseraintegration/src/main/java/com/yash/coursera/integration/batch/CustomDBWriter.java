@@ -33,5 +33,9 @@ public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 	public void beforeStep(StepExecution stepExecution) {
 		jobExecution = stepExecution.getJobExecution();
 		jobName = jobExecution.getJobParameters().getString("jobName");
+		if(jobName.equals("loadProgramAPI"))
+			dao.deleteProgram();
+		else 
+			dao.deleteContent();
 	}
 }

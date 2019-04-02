@@ -50,6 +50,19 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 
 	}
 	
+	@Override
+	public void deleteProgram() {
+		String sql = "delete from program";
+		
+		getJdbcTemplate().execute(sql);
+	}
+	
+	
+	@Override
+	public void deleteContent() {
+		String sql = "delete from content";
+		getJdbcTemplate().execute(sql);
+	}
 	
 	@Override
 	public void insertContent(List<? extends SFLmsMapper> elements) {
