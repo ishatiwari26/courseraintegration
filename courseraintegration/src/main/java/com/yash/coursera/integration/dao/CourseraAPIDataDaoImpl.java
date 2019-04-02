@@ -29,7 +29,7 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 	@Override
 	public void insertProgram(List<? extends SFLmsMapper> elements) {
 		String sql = "insert into courseraintegration_schema.program "
-				+ "(id, content_id,  title,provider_id, status, launch_url, created_date ) values (?,?,?,?,?,?,?)";
+				+ "(id, content_id,  title,provider_id, status, launch_url, created_date,thumbnail_uri ) values (?,?,?,?,?,?,?,?)";
 		getJdbcTemplate().batchUpdate(sql, new BatchPreparedStatementSetter() {
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
 
@@ -41,6 +41,7 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 				ps.setString(5, element.getProviderID());
 				ps.setString(6, element.getLaunchURL());
 				ps.setDate(7, new Date(System.currentTimeMillis()));
+				ps.setString(8, element.getThumbnailURI());
 			}
 
 			public int getBatchSize() {
@@ -67,7 +68,7 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 	@Override
 	public void insertContent(List<? extends SFLmsMapper> elements) {
 		String sql = "insert into courseraintegration_schema.content "
-				+ "(program_id,content_id, title,provider_id, status, launch_url, created_date,  description ) values (?,?,?,?,?,?,?,?)";
+				+ "(program_id,content_id, title,provider_id, status, launch_url, created_date,  description, thumbnail_uri ) values (?,?,?,?,?,?,?,?,?)";
 		getJdbcTemplate().batchUpdate(sql, new BatchPreparedStatementSetter() {
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
 
@@ -81,6 +82,7 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 				ps.setString(6, element.getLaunchURL());
 				ps.setDate(7, new Date(System.currentTimeMillis()));
 				ps.setString(8, element.getDescription().getValue());
+				ps.setString(9, element.getThumbnailURI());
 			}
 
 			public int getBatchSize() {
