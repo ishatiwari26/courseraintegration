@@ -108,14 +108,14 @@ public class InvitationReader implements ItemReader<Elements> {
 		List<User> inviteUsersList = new ArrayList<>();
 
 		User user1 = new User();
-		user1.setExternalId("41386190359");
-		user1.setFullName("user1");
-		user1.setEmail("abc@domain.com");
+		user1.setExternalId("41386190311");
+		user1.setFullName("user123");
+		user1.setEmail("abc123@domain.com");
 
 		User user2 = new User();
-		user2.setExternalId("41386191111");
-		user2.setFullName("user2");
-		user2.setEmail("xyz@domain.com");
+		user2.setExternalId("41386191156");
+		user2.setFullName("user2456");
+		user2.setEmail("xyz123@domain.com");
 
 		inviteUsersList.add(user1);
 		inviteUsersList.add(user2);

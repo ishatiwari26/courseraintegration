@@ -121,7 +121,7 @@ public class ResponseReader implements ItemReader<Elements> {
 
 		} catch (RestClientException e) {
 			try {
-				accessToken = jobConfigurer.getNewAccessToken(refreshToken);
+				accessToken = jobConfigurer.getNewToken(refreshToken);
 				response = callContentsAPI(queryParams);
 			} catch (RestClientException ex) {
 				// to cover condition if exception occurs in new access token generation through

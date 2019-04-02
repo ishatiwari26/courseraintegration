@@ -29,10 +29,13 @@ import com.yash.coursera.integration.batch.InvitationWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.batch.ResponseWriter;
+import com.yash.coursera.integration.helper.BatchConfigComponent;
+import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.Elements;
 import com.yash.coursera.integration.model.SFLmsMapper;
+import com.yash.coursera.integration.service.CourseraService;
 
 @Component
 public class BatchConfig {
@@ -65,7 +68,7 @@ public class BatchConfig {
 	private String clientId;
 
 	@Value("${CALLBACK_URI}")
-	private  String callBackUri;
+	private String callBackUri;
 
 	@Value("${AUTHORIZATION_CODE}")
 	private String authCodeParamValue;
@@ -76,14 +79,14 @@ public class BatchConfig {
 	@Value("${GET_CODE_URI}")
 	private String getCodeUri;
 
-/*	@Value("${INVITATION_OUTPUT_FILE}")
-	private String fileName;*/
-
 	@Value("${GET_LOCAL_INVITATION_URL}")
 	private String localInvitationApiUrl;
 
 	@Autowired
 	private JobBuilderFactory jobs;
+	
+	@Autowired
+	BatchConfigComponent batchConfigComponent;
 
 	public Job processJob() {
 		return jobs.get("processJob").incrementer(new RunIdIncrementer()).flow(getStep()).end().build();
@@ -94,8 +97,8 @@ public class BatchConfig {
 		Step stepContentApiCall = null;
 		try {
 			stepContentApiCall = stepBuilderFactory.get(GlobalConstants.STEP_NAME).allowStartIfComplete(false)
-					.<Elements, List<SFLmsMapper>>chunk(1).reader(reader()).processor(processor())
-					.writer(writer()).build();
+					.<Elements, List<SFLmsMapper>>chunk(1).reader(reader()).processor(processor()).writer(writer())
+					.build();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -116,36 +119,6 @@ public class BatchConfig {
 		ResponseWriter writer = new ResponseWriter();
 		return writer;
 	}
-
-
-	public String getNewAccessToken(String refreshToken) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.add(GlobalConstants.GRANT_TYPE_KEY, refreshTokenParamValue);
-		map.add(GlobalConstants.REFRESH_TOKEN_KEY, refreshToken);
-		map.add(GlobalConstants.CLIENT_ID_KEY, clientId);
-		map.add(GlobalConstants.CLIENT_SECRET_KEY, clientSecret);
-
-		HttpEntity<?> request = new HttpEntity<Object>(map, headers);
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = restTemplate.exchange(getAuthTokenUri, HttpMethod.POST, request,
-				String.class);
-		String body = response.getBody();
-		JSONObject jsonObj = new JSONObject(body);
-		String accessToken = (String) jsonObj.get(GlobalConstants.ACCESS_TOKEN_KEY);
-		writeToFile(accessToken, refreshToken);
-		return accessToken;
-	}
-
-	private static void writeToFile(String accessToken, String refreshToken) {
-		String[] str = new String[] { GlobalConstants.ACCESS_TOKEN_KEY + "=" + accessToken,
-				GlobalConstants.REFRESH_TOKEN_KEY + "=" + refreshToken };
-		FileOpUtils.writeToFile(str);
-	}
-
-
-
 
 	public Job processInviteJob() {
 		return jobs.get("invitation").incrementer(new RunIdIncrementer()).flow(sendInviteStep()).end().build();
@@ -174,11 +147,8 @@ public class BatchConfig {
 		return writer;
 	}
 
-
-
-
-
-
-
+	public String getNewToken(String refreshToken) {
+		return batchConfigComponent.callGetNewAccessToken(refreshToken);
+	}
 
 }
