@@ -10,8 +10,7 @@ DROP SCHEMA IF EXISTS courseraintegration_schema;
 DROP TABLE IF EXISTS courseraintegration_schema.program;
 
 CREATE TABLE  courseraintegration_schema.program (
-CONTENT_ID varchar(255) not Null,
-CONTENT_TYPE varchar(255) not Null,
+CONTENT_ID varchar(255),
 TITLE VARCHAR(255) NOT NULL,
 PROVIDER_ID VARCHAR(255) NOT NULL,
 STATUS VARCHAR(20),
@@ -28,12 +27,11 @@ PRIMARY KEY (ID)
 DROP TABLE IF EXISTS courseraintegration_schema.content;
 
 CREATE TABLE courseraintegration_schema.content(
-CONTENT_ID varchar(255) not Null,
-CONTENT_TYPE varchar(255) not Null,
+CONTENT_ID varchar(255),
 TITLE VARCHAR(255) NOT NULL,
 PROVIDER_ID VARCHAR(255) NOT NULL,
 STATUS VARCHAR(20),
-DESCRIPTION varchar(255),
+DESCRIPTION varchar(2000),
 LAUNCH_URL varchar(255),
 PROGRAM_ID varchar(255) NOT NULL,
 THUMBNAIL_URI varchar(255),
