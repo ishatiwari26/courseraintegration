@@ -3,7 +3,6 @@ package com.yash.coursera.integration.config;
 import java.net.MalformedURLException;
 import java.util.List;
 
-import org.json.JSONObject;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -14,34 +13,28 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
+import com.yash.coursera.integration.batch.CustomDBWriter;
 import com.yash.coursera.integration.batch.InvitationReader;
 import com.yash.coursera.integration.batch.InvitationWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.batch.ResponseWriter;
+import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.helper.BatchConfigComponent;
-import com.yash.coursera.integration.helper.CommonUtils;
-import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.Elements;
 import com.yash.coursera.integration.model.SFLmsMapper;
-import com.yash.coursera.integration.service.CourseraService;
 
 @Component
 public class BatchConfig {
 
 	@Autowired
 	StepBuilderFactory stepBuilderFactory;
+	
+	@Autowired
+	CourseraAPIDataDao dao;
 
 	@Value("${GET_LOCAL_CONTENT_URL}")
 	private String localContentApiUrl;
@@ -97,7 +90,7 @@ public class BatchConfig {
 		Step stepContentApiCall = null;
 		try {
 			stepContentApiCall = stepBuilderFactory.get(GlobalConstants.STEP_NAME).allowStartIfComplete(false)
-					.<Elements, List<SFLmsMapper>>chunk(1).reader(reader()).processor(processor()).writer(writer())
+					.<Elements, List<SFLmsMapper>>chunk(1).reader(reader()).processor(processor()).writer(dbwriter())
 					.build();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -117,6 +110,11 @@ public class BatchConfig {
 
 	public ItemWriter<List<SFLmsMapper>> writer() {
 		ResponseWriter writer = new ResponseWriter();
+		return writer;
+	}
+	
+	public ItemWriter<List<SFLmsMapper>> dbwriter() {
+		CustomDBWriter writer = new CustomDBWriter(dao);
 		return writer;
 	}
 
