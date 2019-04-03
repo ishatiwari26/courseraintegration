@@ -1,6 +1,7 @@
 package com.yash.coursera.integration.components;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -51,8 +52,8 @@ public class CourseraComponent {
 	private String inviteApiUrl;
 
 	private String accessToken, refreshToken;
-
-	CommonUtils commonUtils = new CommonUtils();
+	@Autowired
+	CommonUtils commonUtils;
 	RestTemplate restTemplate = new RestTemplate();
 	HttpHeaders headers = new HttpHeaders();
 

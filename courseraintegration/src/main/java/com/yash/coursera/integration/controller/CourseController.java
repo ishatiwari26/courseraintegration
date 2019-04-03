@@ -1,6 +1,5 @@
 package com.yash.coursera.integration.controller;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,12 +86,13 @@ public class CourseController {
 	private JobLauncher jobLauncher;
 
 	@Autowired
-	BatchConfig config;
+	BatchConfig batchConfig;
 
 	@Autowired
-	CourseraComponent courseraComponent = new CourseraComponent();
+	CourseraComponent courseraComponent;
 
-	CommonUtils commonUtils = new CommonUtils();
+	@Autowired
+	CommonUtils commonUtils;
 
 	@ApiIgnore
 	@RequestMapping(value = "/callback", method = RequestMethod.GET)
@@ -208,7 +208,7 @@ public class CourseController {
 		confMap.put("apiUrl", new JobParameter(getContentsApi));
 		JobParameters jobParameters = new JobParameters(confMap);
 		try {
-			ex = jobLauncher.run(config.processJob(), jobParameters);
+			ex = jobLauncher.run(batchConfig.processJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
 			e.printStackTrace();
@@ -229,7 +229,7 @@ public class CourseController {
 		confMap.put("apiUrl", new JobParameter(getProgramListApi));
 		JobParameters jobParameters = new JobParameters(confMap);
 		try {
-			ex = jobLauncher.run(config.processJob(), jobParameters);
+			ex = jobLauncher.run(batchConfig.processJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
 			e.printStackTrace();
@@ -270,7 +270,7 @@ public class CourseController {
 		JobParameters jobParameters = new JobParameters(confMap);
 
 		try {
-			ex = jobLauncher.run(config.processInviteJob(), jobParameters);
+			ex = jobLauncher.run(batchConfig.processInviteJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
 			e.printStackTrace();
