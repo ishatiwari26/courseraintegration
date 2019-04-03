@@ -1,5 +1,8 @@
 package com.yash.coursera.integration.helper;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class CommonUtils {
 	
 	public void writeToFile(String accessToken, String refreshToken) {

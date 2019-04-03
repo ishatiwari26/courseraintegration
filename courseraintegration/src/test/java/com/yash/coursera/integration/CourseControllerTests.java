@@ -34,11 +34,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.controller.CourseController;
 import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.helper.FileOpUtils;
-import com.yash.coursera.integration.service.CourseraService;
 
 
 @RunWith(SpringRunner.class)
@@ -52,7 +52,7 @@ public class CourseControllerTests {
 	private FileOpUtils fileOpUtil;
 
 	@MockBean
-	CourseraService courseraService;
+	CourseraComponent courseraComponent;
 
 	@MockBean
 	CommonUtils commonUtils;
@@ -83,7 +83,7 @@ public class CourseControllerTests {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("access_token", "testAccessToken");
 		jsonObject.put("refresh_token", "testRefreshToken");
-		when(courseraService.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
+		when(courseraComponent.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
 		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
@@ -93,7 +93,7 @@ public class CourseControllerTests {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("access_token", "testAccessToken");
 		jsonObject.put("refresh_token", "testRefreshToken");
-		when(courseraService.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
+		when(courseraComponent.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
 		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
@@ -103,7 +103,7 @@ public class CourseControllerTests {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("access_token", "");
 		jsonObject.put("refresh_token", "testRefreshToken");
-		when(courseraService.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
+		when(courseraComponent.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
 		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
@@ -114,20 +114,20 @@ public class CourseControllerTests {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("access_token", "testAccessToken");
 		jsonObject.put("refresh_token", "");
-		when(courseraService.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
+		when(courseraComponent.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
 		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
 	/*public void shouldReturnProgramList() throws Exception {
 		JSONObject dumyJSON = getDumyJSONObject();
 		ResponseEntity<String> response = new ResponseEntity(dumyJSON, HttpStatus.OK);
-		when(courseraService.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenReturn(response);
+		when(courseraComponent.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenReturn(response);
 		mockMvc.perform(get("/getProgramList").contentType("application/json").param("start", "0").param("limit", "10"))
 				.andExpect(status().isOk());
 	}*/
 	@Test
 	public void shouldRegenerateTokenWhileGotExceptionInProgramList() throws Exception {
-		when(courseraService.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenThrow(RestClientException.class);
+		when(courseraComponent.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenThrow(RestClientException.class);
 		mockMvc.perform(get("/getProgramList").contentType("application/json").param("start", "0").param("limit", "10"))
 				.andExpect(status().isOk());
 	}
@@ -135,13 +135,13 @@ public class CourseControllerTests {
 	public void shouldReturnContentList() throws Exception {
 		JSONObject dumyJSON = getDumyJSONObject();
 		ResponseEntity<String> response = new ResponseEntity(dumyJSON, HttpStatus.OK);
-		when(courseraService.callContentsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenReturn(response);
+		when(courseraComponent.callContentsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenReturn(response);
 		mockMvc.perform(get("/getContentsList").contentType("application/json").param("start", "0").param("limit", "10"))
 				.andExpect(status().isOk());
 	}
 	/*@Test
 	public void shouldRegenerateTokenWhileGotExceptionInContentList() throws Exception {
-		when(courseraService.callContentsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenThrow(RestClientException.class);
+		when(courseraComponent.callContentsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenThrow(RestClientException.class);
 		mockMvc.perform(get("/getContentsList").contentType("application/json").param("start", "0").param("limit", "10"))
 				.andExpect(status().isOk());
 	}*/

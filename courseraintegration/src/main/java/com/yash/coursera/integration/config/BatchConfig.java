@@ -21,11 +21,11 @@ import com.yash.coursera.integration.batch.InvitationWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.batch.ResponseWriter;
+import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.Elements;
 import com.yash.coursera.integration.model.SFLmsMapper;
-import com.yash.coursera.integration.service.CourseraService;
 
 @Component
 public class BatchConfig {
@@ -36,19 +36,19 @@ public class BatchConfig {
 	private String localInvitationApiUrl;
 
 	@Autowired
-	private JobBuilderFactory jobs;
+	private JobBuilderFactory jobBuilderFactory;
 	
 	@Autowired
-	CourseraService courseraService;
+	CourseraComponent courseraComponent;
 	
 	@Autowired
 	StepBuilderFactory stepBuilderFactory;
 	
 	@Autowired
-	CourseraAPIDataDao dao;
+	CourseraAPIDataDao courseraAPIDataDao;
 	
 	public Job processJob() {
-		return jobs.get("processJob").incrementer(new RunIdIncrementer()).flow(getStep()).end().build();
+		return jobBuilderFactory.get("processJob").incrementer(new RunIdIncrementer()).flow(getStep()).end().build();
 	}
 
 	public Step getStep() {
@@ -80,12 +80,12 @@ public class BatchConfig {
 	}
 	
 	public ItemWriter<List<SFLmsMapper>> dbwriter() {
-		CustomDBWriter writer = new CustomDBWriter(dao);
+		CustomDBWriter writer = new CustomDBWriter(courseraAPIDataDao);
 		return writer;
 	}
 
 	public Job processInviteJob() {
-		return jobs.get("invitation").incrementer(new RunIdIncrementer()).flow(sendInviteStep()).end().build();
+		return jobBuilderFactory.get("invitation").incrementer(new RunIdIncrementer()).flow(sendInviteStep()).end().build();
 	}
 
 	public Step sendInviteStep() {
@@ -112,7 +112,7 @@ public class BatchConfig {
 	}
 
 	public String getNewToken(String refreshToken) {
-		return courseraService.getNewAccessToken(refreshToken);
+		return courseraComponent.getNewAccessToken(refreshToken);
 	}
 
 }
