@@ -25,8 +25,10 @@ public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 		System.out.println("mappers.get(0) size>>>>"+mappers.get(0).size());
 		if(jobName.equals("loadProgramAPI"))
 			dao.insertProgram(mappers.get(0));
-		else 
+		else if(jobName.equals("loadContentAPI")) 
 			dao.insertContent(mappers.get(0));
+		else //if(jobName.equals("loadStatusAPI")) 
+			dao.insertStatus(mappers.get(0));
 	}
 	
 	@BeforeStep
@@ -35,7 +37,9 @@ public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 		jobName = jobExecution.getJobParameters().getString("jobName");
 		if(jobName.equals("loadProgramAPI"))
 			dao.deleteProgram();
-		else 
+		else if(jobName.equals("loadContentAPI")) 
 			dao.deleteContent();
+		else //if(jobName.equals("loadStatusAPI")) 
+			dao.deleteStatus();
 	}
 }

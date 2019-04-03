@@ -60,12 +60,20 @@ public class CourseController {
 
 	@Value("${CONTENT_OUTPUT_FILE}")
 	private String contentFileName;
-
+	
+	@Value("${STATUS_OUTPUT_FILE}")
+	private String statusFileName;
+	
 	@Value("${GET_PROGRAM_API}")
 	private String getProgramListApi;
 
 	@Value("${GET_CONTENTS_API}")
 	private String getContentsApi;
+	
+	@Value("${GET_STATUS_API}")
+	private String getStatusApi;
+	
+	
 
 	@Value("${INVITATION_OUTPUT_FILE}")
 	private String invitationFileName;
@@ -228,6 +236,26 @@ public class CourseController {
 		}
 		return ex.getStatus();
 	}
+	/*@GetMapping(value = "/loadStatusAPI")
+	public BatchStatus loadStatusAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
+	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+
+		JobExecution ex = null;
+
+		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
+		confMap.put("time", new JobParameter(System.currentTimeMillis()));
+		confMap.put("jobName", new JobParameter("loadStatusAPI"));
+		confMap.put("fileName", new JobParameter(statusFileName));
+		confMap.put("apiUrl", new JobParameter(getStatusApi));
+		JobParameters jobParameters = new JobParameters(confMap);
+		try {
+			ex = jobLauncher.run(config.processJob(), jobParameters);
+		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
+				| JobParametersInvalidException e) {
+			e.printStackTrace();
+		}
+		return ex.getStatus();
+	}*/
 
 	@GetMapping(value = "/loadInvitation")
 	public BatchStatus loadInvitationAPI() throws JobExecutionAlreadyRunningException, JobRestartException,

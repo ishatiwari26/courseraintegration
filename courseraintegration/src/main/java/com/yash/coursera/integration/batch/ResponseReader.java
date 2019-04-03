@@ -28,23 +28,35 @@ import com.yash.coursera.integration.model.Elements;
 public class ResponseReader implements ItemReader<Elements> {
 
 	private Integer limitCountPerRead;
-
-	private int index = 0;
-
+	private Integer index = 0;
 	private String apiUrl;
 	private String requestMethod;
 	private Integer jobCount;
 	private ApiResponse apiResponse;
-
-	BatchConfig jobConfigurer;
+	private BatchConfig jobConfigurer;
 	private JobExecution jobExecution;
+	HttpHeaders headers = new HttpHeaders();
+	RestTemplate restTemplate = new RestTemplate();
 	private String accessToken, refreshToken;
 	
-	
-	@BeforeStep
-	public void beforeStep(StepExecution stepExecution) {
-		jobExecution = stepExecution.getJobExecution();
-		apiUrl = jobExecution.getJobParameters().getString("apiUrl");
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public Integer getLimitCountPerRead() {
+		return limitCountPerRead;
+	}
+
+	public void setLimitCountPerRead(Integer limitCountPerRead) {
+		this.limitCountPerRead = limitCountPerRead;
 	}
 
 	public ResponseReader(String requestMethod, Integer jobCount, BatchConfig jobConfigurer, Integer limitCountPerRead) {
@@ -57,7 +69,13 @@ public class ResponseReader implements ItemReader<Elements> {
 
 	public ResponseReader() {
 	}
-
+	
+	@BeforeStep
+	public void beforeStep(StepExecution stepExecution) {
+		jobExecution = stepExecution.getJobExecution();
+		apiUrl = jobExecution.getJobParameters().getString("apiUrl");
+	}
+	
 	@Override
 	public Elements read() throws IOException {
 
@@ -77,60 +95,49 @@ public class ResponseReader implements ItemReader<Elements> {
 		}
 		return elem;
 	}
-
-	public int getIndex() {
-		return index;
-	}
-
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
-	public Integer getLimitCountPerRead() {
-		return limitCountPerRead;
-	}
-
-	public void setLimitCountPerRead(Integer limitCountPerRead) {
-		this.limitCountPerRead = limitCountPerRead;
-	}
-
-	private ApiResponse callContentsAPI(String queryParams) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + accessToken);
-		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-		RestTemplate restTemplate = new RestTemplate();
-		System.out.println("URL>>>"+apiUrl + queryParams);
-		ResponseEntity<ApiResponse> response = restTemplate.exchange(apiUrl + queryParams, HttpMethod.GET, entity,
-				ApiResponse.class);
-		index = index + limitCountPerRead;
-		return response.getBody();
-	}
-
+	
 	public ApiResponse getContentsList(String queryParams) {
 		ApiResponse response = null;
+		Map<String, String> tokensMap = FileOpUtils.readAccessToken();
 		try {
 			if (accessToken == null) {
-				Map<String, String> tokensMap = FileOpUtils.readAccessToken();
 				accessToken = tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY);
 				refreshToken = tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY);
 			}
 
 			if (accessToken != null) {
-				response = callContentsAPI(queryParams);
+				response = callContentsAPI(queryParams,tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY));
 			}
-
+			/*Map<String, String> tokensMap = FileOpUtils.readAccessToken();
+			if(!tokensMap.isEmpty()){
+				accessToken = tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY);
+				refreshToken = tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY);
+				response = callContentsAPI(queryParams);
+			}*/
 		} catch (RestClientException e) {
 			try {
-				accessToken = jobConfigurer.getNewToken(refreshToken);
-				response = callContentsAPI(queryParams);
+				accessToken = jobConfigurer.getNewToken(tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY));
+				response = callContentsAPI(queryParams,accessToken);
 			} catch (RestClientException ex) {
 				// to cover condition if exception occurs in new access token generation through
-				// refresh token itsel
+				// refresh token itself
 				throw ex;
 			}
 
 		}
 		return response;
 	}
+	
+	public ApiResponse callContentsAPI(String queryParams,String accesstoken) {
+		
+		headers.set("Authorization", "Bearer " + accesstoken);
+		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+		
+		ResponseEntity<ApiResponse> response = restTemplate.exchange(apiUrl + queryParams, HttpMethod.GET, entity, ApiResponse.class);
+		
+		index = index + limitCountPerRead;
+		return response.getBody();
+	}
+
 
 }

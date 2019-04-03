@@ -1,7 +1,5 @@
 package com.yash.coursera.integration.helper;
 
-import com.yash.coursera.integration.service.CourseraService;
-
 public class CommonUtils {
 	
 	public void writeToFile(String accessToken, String refreshToken) {

@@ -49,7 +49,7 @@ public class CourseraService {
 	@Value("${GET_INVITATION_API}")
 	private String inviteApiUrl;
 
-	String accessToken, refreshToken;
+	private String accessToken, refreshToken;
 
 	CommonUtils commonUtils = new CommonUtils();
 	RestTemplate restTemplate = new RestTemplate();
