@@ -19,16 +19,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.model.User;
-import com.yash.coursera.integration.service.CourseraService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CourseraServiceTest {
+public class CourseraComponentTest {
 
 	@InjectMocks
-	CourseraService courseraService;
+	CourseraComponent courseraComponent;
 
 	@Mock
 	CommonUtils commonUtils;
@@ -44,11 +44,11 @@ public class CourseraServiceTest {
 
 	@Before
 	public void setUp() {
-		ReflectionTestUtils.setField(courseraService, "getAuthTokenUri",
+		ReflectionTestUtils.setField(courseraComponent, "getAuthTokenUri",
 				"https://accounts.coursera.org/oauth2/v1/token");
-		ReflectionTestUtils.setField(courseraService, "getProgramListApi",
+		ReflectionTestUtils.setField(courseraComponent, "getProgramListApi",
 				"https://api.coursera.org/api/businesses.v1/9SIv6szMSVCAU_Gv8qycvw/programs");
-		ReflectionTestUtils.setField(courseraService, "getContentsApi",
+		ReflectionTestUtils.setField(courseraComponent, "getContentsApi",
 				"https://api.coursera.org/api/businesses.v1/9SIv6szMSVCAU_Gv8qycvw/contents");
 	}
 
@@ -65,7 +65,7 @@ public class CourseraServiceTest {
 		Mockito.mock(HttpEntity.class);
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		courseraService.getAccessToken(code, restTemplate);
+		courseraComponent.getAccessToken(code, restTemplate);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -82,7 +82,7 @@ public class CourseraServiceTest {
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
 		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
-		courseraService.getNewAccessToken(refreshToken);
+		courseraComponent.getNewAccessToken(refreshToken);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -93,7 +93,7 @@ public class CourseraServiceTest {
 		Mockito.mock(HttpEntity.class);
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		courseraService.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(), accessToken);
+		courseraComponent.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(), accessToken);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,7 +104,7 @@ public class CourseraServiceTest {
 		Mockito.mock(HttpEntity.class);
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		courseraService.callContentsAPI(Mockito.any(Integer.class), Mockito.any(Integer.class), accessToken);
+		courseraComponent.callContentsAPI(Mockito.any(Integer.class), Mockito.any(Integer.class), accessToken);
 	}
 	@SuppressWarnings("unchecked")
 	@Test
@@ -114,6 +114,6 @@ public class CourseraServiceTest {
 		Mockito.mock(HttpEntity.class);
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		courseraService.postInvitation(Mockito.any(String.class), accessToken, Mockito.any(User.class));
+		courseraComponent.postInvitation(Mockito.any(String.class), accessToken, Mockito.any(User.class));
 	}
 }

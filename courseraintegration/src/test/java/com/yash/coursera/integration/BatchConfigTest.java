@@ -28,9 +28,9 @@ import org.springframework.batch.core.step.tasklet.TaskletStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
-import com.yash.coursera.integration.service.CourseraService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BatchConfigTest {
@@ -39,7 +39,7 @@ public class BatchConfigTest {
 	BatchConfig batchConfig;
 	
 	@Mock
-	CourseraService courseraService;
+	CourseraComponent courseraComponent;
 	
 	@Mock
 	CourseraAPIDataDao dao;
@@ -173,7 +173,7 @@ public class BatchConfigTest {
 	@Test
 	public void shouldGetNewToken() {
 		String token="testToken";
-		Mockito.when(courseraService.getNewAccessToken(Mockito.anyString())).thenReturn(token);
+		Mockito.when(courseraComponent.getNewAccessToken(Mockito.anyString())).thenReturn(token);
 		batchConfig.getNewToken(Mockito.anyString());
 	}
 }

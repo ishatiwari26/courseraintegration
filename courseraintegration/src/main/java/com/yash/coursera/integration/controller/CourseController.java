@@ -34,12 +34,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.User;
-import com.yash.coursera.integration.service.CourseraService;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -90,7 +90,7 @@ public class CourseController {
 	BatchConfig config;
 
 	@Autowired
-	CourseraService courseraService = new CourseraService();
+	CourseraComponent courseraComponent = new CourseraComponent();
 
 	CommonUtils commonUtils = new CommonUtils();
 
@@ -101,7 +101,7 @@ public class CourseController {
 		RestTemplate restTemplate = new RestTemplate();
 
 		if (code != null) {
-			JSONObject JsonObject = courseraService.getAccessToken(code, restTemplate);
+			JSONObject JsonObject = courseraComponent.getAccessToken(code, restTemplate);
 			accessToken = (String) JsonObject.get(GlobalConstants.ACCESS_TOKEN_KEY);
 			refreshToken = (String) JsonObject.get(GlobalConstants.REFRESH_TOKEN_KEY);
 			if (accessToken != "" && refreshToken != "")
@@ -135,12 +135,12 @@ public class CourseController {
 				response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);
 			} else {
-				response = courseraService.callProgramsAPI(start, limit, tokensMap.get("access_token"));
+				response = courseraComponent.callProgramsAPI(start, limit, tokensMap.get("access_token"));
 			}
 		} catch (RestClientException e) {
 			try {
-				accessToken = courseraService.getNewAccessToken(tokensMap.get("refresh_token"));
-				response = courseraService.callProgramsAPI(start, limit, accessToken);
+				accessToken = courseraComponent.getNewAccessToken(tokensMap.get("refresh_token"));
+				response = courseraComponent.callProgramsAPI(start, limit, accessToken);
 			} catch (RestClientException ex) {
 				response = new ResponseEntity<>("Authorize client  and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);
@@ -174,13 +174,13 @@ public class CourseController {
 				response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);
 			} else {
-				response = courseraService.callContentsAPI(start, limit, tokensMap.get("access_token"));
+				response = courseraComponent.callContentsAPI(start, limit, tokensMap.get("access_token"));
 			}
 
 		} catch (RestClientException e) {
 			try {
-				accessToken = courseraService.getNewAccessToken(tokensMap.get("refresh_token"));
-				response = courseraService.callContentsAPI(start, limit, accessToken);
+				accessToken = courseraComponent.getNewAccessToken(tokensMap.get("refresh_token"));
+				response = courseraComponent.callContentsAPI(start, limit, accessToken);
 			} catch (RestClientException ex) {
 				response = new ResponseEntity<>("Authorize client  and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);
@@ -300,13 +300,13 @@ public class CourseController {
 				response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);
 			} else {
-				response = courseraService.postInvitation(programId, tokensMap.get("access_token"), userInvitation);
+				response = courseraComponent.postInvitation(programId, tokensMap.get("access_token"), userInvitation);
 			}
 
 		} catch (RestClientException e) {
 			try {
-				accessToken = courseraService.getNewAccessToken(tokensMap.get("refresh_token"));
-				response = courseraService.postInvitation(programId, accessToken, userInvitation);
+				accessToken = courseraComponent.getNewAccessToken(tokensMap.get("refresh_token"));
+				response = courseraComponent.postInvitation(programId, accessToken, userInvitation);
 			} catch (RestClientException ex) {
 				response = new ResponseEntity<>("Authorize client  and generate token by calling /generateToken API",
 						HttpStatus.UNAUTHORIZED);

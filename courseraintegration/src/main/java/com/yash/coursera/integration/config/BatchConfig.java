@@ -21,11 +21,11 @@ import com.yash.coursera.integration.batch.InvitationWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.batch.ResponseWriter;
+import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.Elements;
 import com.yash.coursera.integration.model.SFLmsMapper;
-import com.yash.coursera.integration.service.CourseraService;
 
 @Component
 public class BatchConfig {
@@ -39,7 +39,7 @@ public class BatchConfig {
 	private JobBuilderFactory jobs;
 	
 	@Autowired
-	CourseraService courseraService;
+	CourseraComponent courseraComponent;
 	
 	@Autowired
 	StepBuilderFactory stepBuilderFactory;
@@ -112,7 +112,7 @@ public class BatchConfig {
 	}
 
 	public String getNewToken(String refreshToken) {
-		return courseraService.getNewAccessToken(refreshToken);
+		return courseraComponent.getNewAccessToken(refreshToken);
 	}
 
 }
