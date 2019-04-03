@@ -1,80 +1,84 @@
 
-******************** Coursera Schema ***********************************
+******************** COURSERA SCHEMA ***********************************
 
-CREATE SCHEMA courseraintegration_schema AUTHORIZATION root;
+CREATE SCHEMA COURSERAINTEGRATION_SCHEMA AUTHORIZATION ROOT;
 
-DROP SCHEMA IF EXISTS courseraintegration_schema;
+DROP SCHEMA IF EXISTS COURSERAINTEGRATION_SCHEMA;
 
-******************** Program API Table ***********************************
+******************** PROGRAM API TABLE ***********************************
 
-DROP TABLE IF EXISTS courseraintegration_schema.program;
+DROP TABLE IF EXISTS COURSERAINTEGRATION_SCHEMA.PROGRAM;
 
-CREATE TABLE  courseraintegration_schema.program (
-CONTENT_ID varchar(255),
+CREATE TABLE  COURSERAINTEGRATION_SCHEMA.PROGRAM (
+CONTENT_ID VARCHAR(255),
 TITLE VARCHAR(255) NOT NULL,
 PROVIDER_ID VARCHAR(255) NOT NULL,
 STATUS VARCHAR(20),
-LAUNCH_URL varchar(255),
-ID varchar(255) NOT NULL,
-THUMBNAIL_URI varchar(255),
-created_date Date,
+LAUNCH_URL VARCHAR(255),
+ID VARCHAR(255) NOT NULL,
+THUMBNAIL_URI VARCHAR(255),
+CREATED_DATE DATE,
 PRIMARY KEY (ID)
 );
 
 
-******************** Content API Table ***********************************
+******************** CONTENT API TABLE ***********************************
 
-DROP TABLE IF EXISTS courseraintegration_schema.content;
+DROP TABLE IF EXISTS COURSERAINTEGRATION_SCHEMA.CONTENT;
 
-CREATE TABLE courseraintegration_schema.content(
-CONTENT_ID varchar(255),
+CREATE TABLE COURSERAINTEGRATION_SCHEMA.CONTENT(
+CONTENT_ID VARCHAR(255),
 TITLE VARCHAR(255) NOT NULL,
 PROVIDER_ID VARCHAR(255) NOT NULL,
 STATUS VARCHAR(20),
-DESCRIPTION text NOT NULL,
-LAUNCH_URL varchar(255),
-PROGRAM_ID varchar(255) NOT NULL,
-THUMBNAIL_URI varchar(255),
-created_date Date,
+DESCRIPTION TEXT NOT NULL,
+LAUNCH_URL VARCHAR(255),
+PROGRAM_ID VARCHAR(255) NOT NULL,
+THUMBNAIL_URI VARCHAR(255),
+CREATED_DATE DATE,
 PRIMARY KEY (CONTENT_ID)
 );
 
-******************** config Table ***********************************
+******************** CONFIG TABLE ***********************************
 
 
-DROP TABLE IF EXISTS courseraintegration_schema.config;
+DROP TABLE IF EXISTS COURSERAINTEGRATION_SCHEMA.CONFIG;
 
-CREATE TABLE courseraintegration_schema.config(
-org_id SERIAL PRIMARY KEY,
-client_secret  varchar(255) NOT NULL ,
-client_id varchar(255) NOT NULL ,
-client_name varchar(255) NOT NULL,
-contact_person varchar(255) NOT NULL,
-email varchar(255) NOT NULL,
-phone numeric,
-lms_api_host varchar(255) NOT NULL ,
-ftp_host varchar(255) NOT NULL,
-ftp_user varchar(255) NOT NULL,
-ftp_password varchar(255) NOT NULL);
+CREATE TABLE COURSERAINTEGRATION_SCHEMA.CONFIG(
+ORG_ID SERIAL PRIMARY KEY,
+CLIENT_SECRET  VARCHAR(255) NOT NULL ,
+CLIENT_ID VARCHAR(255) NOT NULL ,
+CLIENT_NAME VARCHAR(255) NOT NULL,
+CONTACT_PERSON VARCHAR(255) NOT NULL,
+EMAIL VARCHAR(255) NOT NULL,
+PHONE NUMERIC,
+LMS_API_HOST VARCHAR(255) NOT NULL ,
+FTP_HOST VARCHAR(255) NOT NULL,
+FTP_USER VARCHAR(255) NOT NULL,
+FTP_PASSWORD VARCHAR(255) NOT NULL);
 
-******************** batchjobscheduler Table ***********************************
+******************** BATCHJOBSCHEDULER TABLE ***********************************
 
-DROP TABLE IF EXISTS courseraintegration_schema.batchjobscheduler;
+DROP TABLE IF EXISTS COURSERAINTEGRATION_SCHEMA.BATCHJOBSCHEDULER;
 
-CREATE TABLE courseraintegration_schema.batchjobscheduler(
-job1_schedule varchar(255),
-job2_schedule varchar(255),
-job3_schedule varchar(255),
-job4_schedule varchar(255),
-job5_schedule varchar(255),
-job6_schedule varchar(255),
-org_id INTEGER REFERENCES courseraintegration_schema.config(org_id),
-PRIMARY KEY (org_id));
+CREATE TABLE COURSERAINTEGRATION_SCHEMA.BATCH_JOB_SCHEDULER(
+JOB1_SCHEDULE VARCHAR(255),
+JOB2_SCHEDULE VARCHAR(255),
+JOB3_SCHEDULE VARCHAR(255),
+JOB4_SCHEDULE VARCHAR(255),
+JOB5_SCHEDULE VARCHAR(255),
+JOB6_SCHEDULE VARCHAR(255),
+ORG_ID INTEGER REFERENCES COURSERAINTEGRATION_SCHEMA.CONFIG(ORG_ID),
+PRIMARY KEY (ORG_ID));
 
+******************** STATUS TABLE ***********************************
 
+DROP TABLE IF EXISTS COURSERAINTEGRATION_SCHEMA.STATUS;
 
-
-
-
-
-
+CREATE TABLE COURSERAINTEGRATION_SCHEMA.STATUS(
+USERID VARCHAR(255) NOT NULL ,
+ID  VARCHAR(255) NOT NULL ,
+PROVIDER_ID VARCHAR(255) NOT NULL,
+ISCOMPLETED BOOLEAN ,
+COMPLETEDAT DATE ,
+GRADE VARCHAR(255));
