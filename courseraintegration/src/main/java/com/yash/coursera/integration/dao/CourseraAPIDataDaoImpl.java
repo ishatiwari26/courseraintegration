@@ -50,21 +50,21 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 		});
 
 	}
-	
+
 	@Override
 	public void deleteProgram() {
 		String sql = "delete from program";
-		
+
 		getJdbcTemplate().execute(sql);
 	}
-	
-	
+
+
 	@Override
 	public void deleteContent() {
 		String sql = "delete from content";
 		getJdbcTemplate().execute(sql);
 	}
-	
+
 	@Override
 	public void insertContent(List<? extends SFLmsMapper> elements) {
 		String sql = "insert into courseraintegration_schema.content "
@@ -122,6 +122,16 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 	public void deleteStatus() {
 		/*String sql = "delete from status";
 		getJdbcTemplate().execute(sql);*/
+	}
+
+
+	@Override
+	public List<String> getProgramIds() {
+
+		String sql = "select id from courseraintegration_schema.program";
+		List<String> programIds = getJdbcTemplate().queryForList(sql, String.class);
+
+		return programIds;
 	}
 
 }

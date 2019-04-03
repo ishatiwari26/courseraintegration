@@ -12,5 +12,5 @@ public interface CourseraAPIDataDao {
 	public void deleteProgram();
 	public void deleteContent();
 	public void deleteStatus();
-
+	public List<String> getProgramIds();
 }

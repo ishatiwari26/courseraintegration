@@ -1,18 +1,13 @@
 package com.yash.coursera.integration.model;
 
-import java.io.Serializable;
-
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class User implements Serializable{
+public class User {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private Integer id;
 	private String externalId;
 	private String fullName;
 	private String email;

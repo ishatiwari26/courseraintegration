@@ -9,13 +9,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
+import com.yash.coursera.integration.model.ApiResponse;
 import com.yash.coursera.integration.model.User;
 
 @Component
@@ -116,12 +116,14 @@ public class CourseraComponent {
 		return response;
 	}
 
-	public ResponseEntity<String> postInvitation(String programId, String accessToken, User user) {
+	public ResponseEntity<ApiResponse> postInvitation(String programId, String accessToken, User user, String inviteApiUrl){
 		headers.set("Authorization", "Bearer " + accessToken);
 		String url = inviteApiUrl + programId + "/invitations";
 
 		HttpEntity<User> entity = new HttpEntity<User>(user, headers);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+		ResponseEntity<ApiResponse> response = restTemplate.exchange(url, HttpMethod.POST, entity, ApiResponse.class);
+		
+		System.out.println(response);
 		return response;
 	}
 

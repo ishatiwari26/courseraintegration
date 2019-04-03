@@ -278,7 +278,7 @@ public class CourseController {
 		return ex.getStatus();
 	}
 
-	@ApiOperation(value = "send invite to users", response = List.class)
+	/*@ApiOperation(value = "send invite to users", response = List.class)
 
 	@ApiResponses(value = { @ApiResponse(code = 201, message = "Successfully send invite"),
 
@@ -313,6 +313,6 @@ public class CourseController {
 			}
 		}
 		return response;
-	}
+	}*/
 
 }

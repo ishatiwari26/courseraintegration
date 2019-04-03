@@ -20,15 +20,40 @@ import org.springframework.batch.item.ItemWriter;
 import com.yash.coursera.integration.model.Element;
 import com.yash.coursera.integration.model.Elements;
 
-public class InvitationWriter implements ItemWriter<Elements> {
+public class InviteWriter implements ItemWriter<Elements> {
 
 	private String fileName;
-
 	private static final String[] HEADERS = { "id", "fullName", "externalId", "email", "programId" };
 	private String outputFilename;
 	private Workbook workbook;
 	private int currRow = 0;
 	private JobExecution jobExecution;
+
+	@Override
+	public void write(List<? extends Elements> elements) throws Exception {
+
+		Integer i = 0;
+		while (i < elements.size()) {
+
+			List<Element> elemen = elements.get(i).getElement();
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			for (Element element : elemen) {
+
+				currRow++;
+				Row row = sheet.createRow(currRow);
+
+				createStringCell(row, element.getId(), 0);
+				createStringCell(row, element.getFullName(), 1);
+				createStringCell(row, element.getExternalId(), 2);
+				createStringCell(row, element.getEmail(), 3);
+				createStringCell(row, element.getProgramId(), 4);
+			}
+
+			i++;
+		}
+	}
 
 	private void addHeaders(Sheet sheet) {
 
@@ -58,7 +83,6 @@ public class InvitationWriter implements ItemWriter<Elements> {
 	@BeforeStep
 	public void beforeStep(StepExecution stepExecution) {
 		System.out.println("Calling beforeStep");
-		System.out.println("Calling beforeStep");
 		jobExecution = stepExecution.getJobExecution();
 		fileName = jobExecution.getJobParameters().getString("fileName");
 		outputFilename = fileName;
@@ -71,29 +95,6 @@ public class InvitationWriter implements ItemWriter<Elements> {
 		currRow++;
 		addHeaders(sheet);
 
-	}
-
-	@Override
-	public void write(List<? extends Elements> invites) throws Exception {
-
-		System.out.println(invites.get(0).getElement());
-		System.out.println("dd");
-
-		List<Element> elements = invites.get(0).getElement();
-
-		Sheet sheet = workbook.getSheetAt(0);
-
-		for (Element element : elements) {
-
-			currRow++;
-			Row row = sheet.createRow(currRow);
-
-			createStringCell(row, element.getId(), 0);
-			createStringCell(row, element.getFullName(), 1);
-			createStringCell(row, element.getExternalId(), 2);
-			createStringCell(row, element.getEmail(), 3);
-			createStringCell(row, element.getProgramId(), 4);
-		}
 	}
 
 	@AfterStep
