@@ -9,15 +9,16 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.yash.coursera.integration.Exceptions.CustomeNullElementException;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
@@ -78,11 +79,12 @@ public class ResponseReader implements ItemReader<Elements> {
 	}
 	
 	@Override
-	public Elements read() throws IOException {
+	public Elements read() throws IOException, CustomeNullElementException {
 
 		apiResponse = getContentsList("?start=" + index + "&limit=100");
 
 		Elements elem = null;
+		if(apiResponse.getElements().size() > 0){
 		try {
 			List<Element> list = apiResponse.getElements();
 			if (!CollectionUtils.isEmpty(list)) {
@@ -93,6 +95,10 @@ public class ResponseReader implements ItemReader<Elements> {
 
 		} catch (IndexOutOfBoundsException ex) {
 			return null;
+		}
+		}
+		else{
+			throw new CustomeNullElementException("No any Elements found by coursera");
 		}
 		return elem;
 	}
@@ -135,7 +141,18 @@ public class ResponseReader implements ItemReader<Elements> {
 		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 		
 		ResponseEntity<ApiResponse> response = restTemplate.exchange(apiUrl + queryParams, HttpMethod.GET, entity, ApiResponse.class);
+		/*Element element = new Element();
+		element.setId("111");
+		element.setUserId("n1~Course~VcGV0kxGEeWKRQoYMLwAUw");
+		element.setIsCompleted(false);
+		element.setGrade("0.91");
+		element.setCompletedAt(new Date(System.currentTimeMillis()));
+		List<Element> listOfElements = new ArrayList<>();
+		listOfElements.add(element);
+		ApiResponse apiGetResponse = new ApiResponse();
+		apiGetResponse.setElements(listOfElements);
 		
+		ResponseEntity<ApiResponse> response = new ResponseEntity(apiGetResponse, HttpStatus.OK);*/
 		index = index + limitCountPerRead;
 		return response.getBody();
 	}

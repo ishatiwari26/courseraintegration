@@ -83,8 +83,8 @@ public class BatchConfigTest {
 	@Before
 	public void setUp() {
 		ReflectionTestUtils.setField(batchConfig, "limitCountPerRead", 100);
-		ReflectionTestUtils.setField(batchConfig, "localInvitationApiUrl", "http://localhost:8080/invitation");
-	}
+/*		ReflectionTestUtils.setField(batchConfig, "localInvitationApiUrl", "http://localhost:8080/invitation");
+*/	}
 
 	@SuppressWarnings("unchecked")
 	@Test

@@ -1,5 +1,6 @@
 package com.yash.coursera.integration.model;
 
+import java.sql.Date;
 import java.util.List;
 
 import lombok.Getter;
@@ -29,5 +30,10 @@ public class Element {
 	private String externalId;
 	private String email;
 	private String programId;
+	
+	private String userId;
+	private Boolean isCompleted;
+	private Date completedAt;
+	private String grade;
 
 }

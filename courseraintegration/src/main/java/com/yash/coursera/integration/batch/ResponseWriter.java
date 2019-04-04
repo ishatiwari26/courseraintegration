@@ -33,7 +33,7 @@ public class ResponseWriter implements ItemWriter<List<SFLmsMapper>> {
 	private String outputFilename;
 	private Workbook workbook;
 	private CellStyle dataCellStyle;
-	private int currRow = 0;
+	private Integer currRow = 0;
 	private JobExecution jobExecution;
 
 	private void addHeaders(Sheet sheet) {

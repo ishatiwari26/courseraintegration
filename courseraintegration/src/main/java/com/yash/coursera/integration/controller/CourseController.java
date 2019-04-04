@@ -234,7 +234,7 @@ public class CourseController {
 		}
 		return ex.getStatus();
 	}
-	/*@GetMapping(value = "/loadStatusAPI")
+	@GetMapping(value = "/loadStatusAPI")
 	public BatchStatus loadStatusAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
@@ -247,13 +247,13 @@ public class CourseController {
 		confMap.put("apiUrl", new JobParameter(getStatusApi));
 		JobParameters jobParameters = new JobParameters(confMap);
 		try {
-			ex = jobLauncher.run(config.processJob(), jobParameters);
+			ex = jobLauncher.run(batchConfig.processJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
 			e.printStackTrace();
 		}
 		return ex.getStatus();
-	}*/
+	}
 
 	@GetMapping(value = "/loadInvitationAPI")
 	public BatchStatus loadInvitationAPI() throws JobExecutionAlreadyRunningException, JobRestartException,

@@ -94,28 +94,24 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 
 	@Override
 	public void insertStatus(List<? extends SFLmsMapper> elements) {
-		/*String sql = "insert into courseraintegration_schema.status "
-				+ "(program_id,content_id, title,provider_id, status, launch_url, created_date,  description, thumbnail_uri ) values (?,?,?,?,?,?,?,?,?)";
+		String sql = "insert into courseraintegration_schema.status "
+				+ "(userId, id, provider_id, isCompleted, completedAt, grade) values (?,?,?,?,?,?)";
 		getJdbcTemplate().batchUpdate(sql, new BatchPreparedStatementSetter() {
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
 
 				SFLmsMapper element = elements.get(i);
-				ps.setString(1, element.getCourseID());
-				System.out.println(" element.getContentID()>>>"+ element.getContentID());
-				ps.setString(2, element.getContentID());
-				ps.setString(3, element.getTitle().getValue());
-				ps.setString(4, element.getStatus());
-				ps.setString(5, element.getProviderID());
-				ps.setString(6, element.getLaunchURL());
-				ps.setDate(7, new Date(System.currentTimeMillis()));
-				ps.setString(8, element.getDescription().getValue());
-				ps.setString(9, element.getThumbnailURI());
+				ps.setString(1, element.getUserId());
+				ps.setString(2, element.getId());
+				ps.setString(3, element.getProviderID());
+				ps.setBoolean(4, element.getIsCompleted());
+				ps.setDate(5, element.getCompletedAt()); //new Date(System.currentTimeMillis())
+				ps.setString(6, element.getGrade());
 			}
 
 			public int getBatchSize() {
 				return elements.size();
 			}
-		});*/
+		});
 	}
 
 	@Override
