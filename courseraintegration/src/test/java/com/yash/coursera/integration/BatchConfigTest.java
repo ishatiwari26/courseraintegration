@@ -1,8 +1,6 @@
 package com.yash.coursera.integration;
 
 
-import java.net.MalformedURLException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +24,9 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.builder.TaskletStepBuilder;
 import org.springframework.batch.core.step.tasklet.TaskletStep;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.yash.coursera.integration.components.CourseraComponent;
@@ -77,14 +78,22 @@ public class BatchConfigTest {
 	@Mock
 	private SimpleStepBuilder<Object, Object> simpleStepBuilder;
 	
+	@MockBean
+	private ItemReader<Object> itemReader;
+	
+	@MockBean
+	private ItemProcessor<Object, Object> itemProcessor;
+	
+	@MockBean
+	private ItemWriter<Object> itemWriter;
+	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
 	@Before
 	public void setUp() {
 		ReflectionTestUtils.setField(batchConfig, "limitCountPerRead", 100);
-/*		ReflectionTestUtils.setField(batchConfig, "localInvitationApiUrl", "http://localhost:8080/invitation");
-*/	}
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -136,8 +145,9 @@ public class BatchConfigTest {
 		Mockito.when(stepBuilderFactory.get(Mockito.anyString())).thenReturn(stepBuilder);
 		Mockito.when(stepBuilder.allowStartIfComplete(false)).thenReturn(stepBuilder);
 		Mockito.when(stepBuilder.chunk(Mockito.anyInt())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.reader(Mockito.any())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.writer(Mockito.any())).thenReturn(simpleStepBuilder);
+		Mockito.when(simpleStepBuilder.reader(itemReader)).thenReturn(simpleStepBuilder);
+		Mockito.when(simpleStepBuilder.processor(itemProcessor)).thenReturn(simpleStepBuilder);
+		Mockito.when(simpleStepBuilder.writer(itemWriter)).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
 		
 		Mockito.when(jobBuilderFactory.get(Mockito.anyString())).thenReturn(jobBuilder);
@@ -153,8 +163,9 @@ public class BatchConfigTest {
 		Mockito.when(stepBuilderFactory.get(Mockito.anyString())).thenReturn(stepBuilder);
 		Mockito.when(stepBuilder.allowStartIfComplete(false)).thenReturn(stepBuilder);
 		Mockito.when(stepBuilder.chunk(Mockito.anyInt())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.reader(Mockito.any())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.writer(Mockito.any())).thenReturn(simpleStepBuilder);
+		Mockito.when(simpleStepBuilder.reader(itemReader)).thenReturn(simpleStepBuilder);
+		Mockito.when(simpleStepBuilder.processor(itemProcessor)).thenReturn(simpleStepBuilder);
+		Mockito.when(simpleStepBuilder.writer(itemWriter)).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
 		Assert.assertEquals(taskletStep,batchConfig.sendInviteStep());
 	}
