@@ -72,8 +72,6 @@ public class CourseController {
 	@Value("${GET_STATUS_API}")
 	private String getStatusApi;
 	
-	
-
 	@Value("${INVITATION_OUTPUT_FILE}")
 	private String invitationFileName;
 
@@ -257,7 +255,7 @@ public class CourseController {
 		return ex.getStatus();
 	}*/
 
-	@GetMapping(value = "/loadInvitation")
+	@GetMapping(value = "/loadInvitationAPI")
 	public BatchStatus loadInvitationAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		JobExecution ex = null;

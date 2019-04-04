@@ -35,19 +35,25 @@ public class BatchConfig {
 
 	@Autowired
 	private JobBuilderFactory jobBuilderFactory;
-	
+
 	@Autowired
 	CourseraComponent courseraComponent;
-	
+
 	@Autowired
 	StepBuilderFactory stepBuilderFactory;
-	
+
 	@Autowired
 	CourseraAPIDataDao courseraAPIDataDao;
-	
+
 	@Autowired
 	ItemReader<User> itemReader;
-	
+
+	@Autowired
+	InviteProcessor inviteProcessor;
+
+	@Autowired
+	InviteWriter inviteWriter;
+
 	public Job processJob() {
 		return jobBuilderFactory.get("processJob").incrementer(new RunIdIncrementer()).flow(getStep()).end().build();
 	}
@@ -79,7 +85,7 @@ public class BatchConfig {
 		ResponseWriter writer = new ResponseWriter();
 		return writer;
 	}
-	
+
 	public ItemWriter<List<SFLmsMapper>> dbwriter() {
 		CustomDBWriter writer = new CustomDBWriter(courseraAPIDataDao);
 		return writer;
@@ -95,17 +101,13 @@ public class BatchConfig {
 		stepInviteApiCall = stepBuilderFactory.get(GlobalConstants.STEP_NAME).allowStartIfComplete(false)
 				.<User, Elements>chunk(3)
 				.reader(itemReader)
-				.processor(inviteProcessor())
-				.writer(new InviteWriter())
+				.processor(inviteProcessor)
+				.writer(inviteWriter)
 				.build();
 
 		return stepInviteApiCall;
 	}
 
-	public ItemProcessor<User, Elements> inviteProcessor(){
-		return new InviteProcessor(courseraAPIDataDao);
-	}
-	
 	public String getNewToken(String refreshToken) {
 		return courseraComponent.getNewAccessToken(refreshToken);
 	}

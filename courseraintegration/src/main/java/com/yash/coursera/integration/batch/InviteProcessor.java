@@ -6,11 +6,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
@@ -24,31 +25,29 @@ import com.yash.coursera.integration.model.Element;
 import com.yash.coursera.integration.model.Elements;
 import com.yash.coursera.integration.model.User;
 
+@Component
 public class InviteProcessor implements ItemProcessor<User, Elements> {
+	
+	@Autowired
+	BatchConfig jobConfigurer;
+	
+	@Autowired
+	private CourseraAPIDataDao dao;
+	
+	@Autowired
+	private CourseraComponent courseraComponent;
 
 	private ApiResponse apiResponse;
 	private List<String> programIds;
 	List<Element> apiResponseList;
-	private String invitationApiUrl;
-
-	BatchConfig jobConfigurer;
-	private JobExecution jobExecution;
-	private String accessToken, refreshToken;
-
-	private CourseraAPIDataDao dao;
-	private CourseraComponent courseraComponent = new CourseraComponent();
-
-	public InviteProcessor() {
-	}
-
-	public InviteProcessor(CourseraAPIDataDao courseraAPIDataDao) {
-		this.dao = courseraAPIDataDao;
-	}
+	private String accessToken;
+	private String refreshToken;
 
 	@Override
 	public Elements process(User user) throws Exception {
 
 		if (!CollectionUtils.isEmpty(programIds)) {
+			apiResponseList = null;
 			List<Element> tempApiResponseList = new ArrayList<>();
 			programIds.forEach(programId -> {
 				apiResponse = getInviteResponse(programId, user);
@@ -74,7 +73,7 @@ public class InviteProcessor implements ItemProcessor<User, Elements> {
 
 	private ApiResponse callInvitationAPI(String programId, User user) {
 
-		ResponseEntity<ApiResponse> response = courseraComponent.postInvitation(programId, accessToken, user,invitationApiUrl);
+		ResponseEntity<ApiResponse> response = courseraComponent.postInvitation(programId, accessToken, user);
 		return response.getBody();
 	}
 
@@ -95,7 +94,6 @@ public class InviteProcessor implements ItemProcessor<User, Elements> {
 
 			if(e.getRawStatusCode() == 401) {
 				try {
-					jobConfigurer = new BatchConfig();
 					accessToken = jobConfigurer.getNewToken(refreshToken);
 					response = callInvitationAPI(programId, user);
 				} catch (RestClientException ex) {
@@ -115,9 +113,6 @@ public class InviteProcessor implements ItemProcessor<User, Elements> {
 
 	@BeforeStep
 	public void beforeStep(StepExecution stepExecution) {
-
-		jobExecution = stepExecution.getJobExecution();
-		invitationApiUrl = jobExecution.getJobParameters().getString("apiUrl");
 		programIds = dao.getProgramIds();
 	}
 

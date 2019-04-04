@@ -52,6 +52,7 @@ public class CourseraComponent {
 	private String inviteApiUrl;
 
 	private String accessToken, refreshToken;
+	
 	@Autowired
 	CommonUtils commonUtils;
 	RestTemplate restTemplate = new RestTemplate();
@@ -116,7 +117,7 @@ public class CourseraComponent {
 		return response;
 	}
 
-	public ResponseEntity<ApiResponse> postInvitation(String programId, String accessToken, User user, String inviteApiUrl){
+	public ResponseEntity<ApiResponse> postInvitation(String programId, String accessToken, User user){
 		headers.set("Authorization", "Bearer " + accessToken);
 		String url = inviteApiUrl + programId + "/invitations";
 

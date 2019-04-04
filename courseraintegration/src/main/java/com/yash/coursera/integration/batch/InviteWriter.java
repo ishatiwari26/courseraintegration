@@ -16,10 +16,12 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.stereotype.Component;
 
 import com.yash.coursera.integration.model.Element;
 import com.yash.coursera.integration.model.Elements;
 
+@Component
 public class InviteWriter implements ItemWriter<Elements> {
 
 	private String fileName;
