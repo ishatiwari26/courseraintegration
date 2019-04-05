@@ -141,18 +141,6 @@ public class ResponseReader implements ItemReader<Elements> {
 		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 		
 		ResponseEntity<ApiResponse> response = restTemplate.exchange(apiUrl + queryParams, HttpMethod.GET, entity, ApiResponse.class);
-		/*Element element = new Element();
-		element.setId("111");
-		element.setUserId("n1~Course~VcGV0kxGEeWKRQoYMLwAUw");
-		element.setIsCompleted(false);
-		element.setGrade("0.91");
-		element.setCompletedAt(new Date(System.currentTimeMillis()));
-		List<Element> listOfElements = new ArrayList<>();
-		listOfElements.add(element);
-		ApiResponse apiGetResponse = new ApiResponse();
-		apiGetResponse.setElements(listOfElements);
-		
-		ResponseEntity<ApiResponse> response = new ResponseEntity(apiGetResponse, HttpStatus.OK);*/
 		index = index + limitCountPerRead;
 		return response.getBody();
 	}

@@ -81,11 +81,6 @@ public class BatchConfig {
 		return new ResponseProcessor();
 	}
 
-	public ItemWriter<List<SFLmsMapper>> writer() {
-		ResponseWriter writer = new ResponseWriter();
-		return writer;
-	}
-
 	public ItemWriter<List<SFLmsMapper>> dbwriter() {
 		CustomDBWriter writer = new CustomDBWriter(courseraAPIDataDao);
 		return writer;

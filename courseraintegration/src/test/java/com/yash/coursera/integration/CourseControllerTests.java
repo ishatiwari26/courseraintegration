@@ -118,33 +118,6 @@ public class CourseControllerTests {
 		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
-	/*public void shouldReturnProgramList() throws Exception {
-		JSONObject dumyJSON = getDumyJSONObject();
-		ResponseEntity<String> response = new ResponseEntity(dumyJSON, HttpStatus.OK);
-		when(courseraComponent.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenReturn(response);
-		mockMvc.perform(get("/getProgramList").contentType("application/json").param("start", "0").param("limit", "10"))
-				.andExpect(status().isOk());
-	}*/
-	@Test
-	public void shouldRegenerateTokenWhileGotExceptionInProgramList() throws Exception {
-		when(courseraComponent.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenThrow(RestClientException.class);
-		mockMvc.perform(get("/getProgramList").contentType("application/json").param("start", "0").param("limit", "10"))
-				.andExpect(status().isOk());
-	}
-	@Test
-	public void shouldReturnContentList() throws Exception {
-		JSONObject dumyJSON = getDumyJSONObject();
-		ResponseEntity<String> response = new ResponseEntity(dumyJSON, HttpStatus.OK);
-		when(courseraComponent.callContentsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenReturn(response);
-		mockMvc.perform(get("/getContentsList").contentType("application/json").param("start", "0").param("limit", "10"))
-				.andExpect(status().isOk());
-	}
-	/*@Test
-	public void shouldRegenerateTokenWhileGotExceptionInContentList() throws Exception {
-		when(courseraComponent.callContentsAPI(Mockito.anyInt(), Mockito.anyInt(),Mockito.anyString())).thenThrow(RestClientException.class);
-		mockMvc.perform(get("/getContentsList").contentType("application/json").param("start", "0").param("limit", "10"))
-				.andExpect(status().isOk());
-	}*/
 	
 	@Test
 	public void shouldLoadContentAPI() throws Exception{
@@ -203,6 +176,22 @@ public class CourseControllerTests {
 		 assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
 	}
 	@Test
+	public void shouldLoadStatusAPI() throws Exception{
+		Mockito.mock(JobParameter.class);		
+		Mockito.mock(JobParameters.class);
+		JobExecution jobExecution = new JobExecution(1L);
+		jobExecution.setStatus(BatchStatus.COMPLETED);
+		Mockito.mock(HashMap.class);
+		Job job = new SimpleJob();
+		Mockito.when(config.processJob()).thenReturn(job);
+		
+		Mockito.when(jobLauncher.run(Mockito.any(Job.class),Mockito.any(JobParameters.class))).thenReturn(jobExecution);
+		
+		mockMvc.perform(get("/loadStatusAPI").contentType("application/json"))
+		.andExpect(status().isOk());
+		 assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+	}
+	/*@Test
 	public void shouldLoadUserInvitationAPI() throws Exception{
 		Mockito.mock(JobParameter.class);		
 		Mockito.mock(JobParameters.class);
@@ -217,7 +206,7 @@ public class CourseControllerTests {
 		mockMvc.perform(get("/loadInvitation").contentType("application/json"))
 		.andExpect(status().isOk());
 		 assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
-	}
+	}*/
 	/*@Test
 	public void shouldUnAutjorixedWhenPostUserWhoNotInvided() throws Exception{
 		JSONObject userInviteJsonObject=new JSONObject();
@@ -227,7 +216,7 @@ public class CourseControllerTests {
 		mockMvc.perform(get("/invitation?programId=Q0Wzd5osEei1PwqN7iH8Jg").contentType("application/json")
 				.content("externalId=testExternalId,fullName=testFullName,email=testEmail")).andExpect(status().is(404));
 	}*/
-	private JSONObject getDumyJSONObject() {
+	/*private JSONObject getDumyJSONObject() {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("name", "YASH Technologies Learning Program");
 		jsonObj.put("tagline", "Start learning on Coursera!");
@@ -250,5 +239,5 @@ public class CourseControllerTests {
 		JSONObject mainObj = new JSONObject();
 		mainObj.put("elements", jsonArray);
 		return mainObj;
-	}
+	}*/
 }

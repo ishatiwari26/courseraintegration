@@ -124,7 +124,6 @@ public class CourseraComponent {
 		HttpEntity<User> entity = new HttpEntity<User>(user, headers);
 		ResponseEntity<ApiResponse> response = restTemplate.exchange(url, HttpMethod.POST, entity, ApiResponse.class);
 		
-		System.out.println(response);
 		return response;
 	}
 
