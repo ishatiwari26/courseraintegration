@@ -182,7 +182,8 @@ public class CourseControllerTests {
 		.andExpect(status().isOk());
 		 assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
 	}
-	/*@Test
+	
+	@Test
 	public void shouldLoadUserInvitationAPI() throws Exception{
 		Mockito.mock(JobParameter.class);		
 		Mockito.mock(JobParameters.class);
@@ -194,10 +195,11 @@ public class CourseControllerTests {
 		
 		Mockito.when(jobLauncher.run(Mockito.any(Job.class),Mockito.any(JobParameters.class))).thenReturn(jobExecution);
 		
-		mockMvc.perform(get("/loadInvitation").contentType("application/json"))
+		mockMvc.perform(get("/loadInvitationAPI").contentType("application/json"))
 		.andExpect(status().isOk());
 		 assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
-	}*/
+	}
+	
 	/*@Test
 	public void shouldUnAutjorixedWhenPostUserWhoNotInvided() throws Exception{
 		JSONObject userInviteJsonObject=new JSONObject();
