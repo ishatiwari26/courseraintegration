@@ -20,7 +20,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.components.CourseraComponent;
-import com.yash.coursera.integration.helper.CommonUtils;
+import com.yash.coursera.integration.helper.FileOpUtils;
+import com.yash.coursera.integration.model.ApiResponse;
 import com.yash.coursera.integration.model.User;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,7 +31,7 @@ public class CourseraComponentTest {
 	CourseraComponent courseraComponent;
 
 	@Mock
-	CommonUtils commonUtils;
+	FileOpUtils commonUtils;
 
 	@Mock
 	RestTemplate restTemplate;
@@ -75,7 +76,7 @@ public class CourseraComponentTest {
 		Mockito.mock(HttpEntity.class);
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
+		doNothing().when(commonUtils).writeToFile(Mockito.anyObject());
 		assertEquals(tokenJSON.get("access_token"),courseraComponent.getNewAccessToken(refreshToken));
 	}
 
@@ -104,10 +105,10 @@ public class CourseraComponentTest {
 	@Test
 	public void shouldPostUserInvitation(){
 		String accessToken = "testAccessToken";
-		ResponseEntity<String> response = Mockito.mock(ResponseEntity.class);
+		ResponseEntity<ApiResponse> response = Mockito.mock(ResponseEntity.class);
 		Mockito.mock(HttpEntity.class);
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
-				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		courseraComponent.postInvitation(Mockito.any(String.class),accessToken, Mockito.any(User.class));
+				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(ApiResponse.class))).thenReturn(response);
+		courseraComponent.postInvitation("progId",accessToken, new User());
 	}
 }

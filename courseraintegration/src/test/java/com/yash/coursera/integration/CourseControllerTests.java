@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.HashMap;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,24 +19,19 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.job.SimpleJob;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.controller.CourseController;
-import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.helper.FileOpUtils;
 
 
@@ -53,9 +47,6 @@ public class CourseControllerTests {
 
 	@MockBean
 	CourseraComponent courseraComponent;
-
-	@MockBean
-	CommonUtils commonUtils;
 
 	@MockBean
 	RestTemplate restTemplate;
@@ -84,7 +75,7 @@ public class CourseControllerTests {
 		jsonObject.put("access_token", "testAccessToken");
 		jsonObject.put("refresh_token", "testRefreshToken");
 		when(courseraComponent.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
-		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
+		doNothing().when(fileOpUtil).writeToFile(Mockito.anyObject());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
 	@Test
@@ -94,7 +85,7 @@ public class CourseControllerTests {
 		jsonObject.put("access_token", "testAccessToken");
 		jsonObject.put("refresh_token", "testRefreshToken");
 		when(courseraComponent.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
-		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
+		doNothing().when(fileOpUtil).writeToFile(Mockito.anyObject());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
 	@Test
@@ -104,7 +95,7 @@ public class CourseControllerTests {
 		jsonObject.put("access_token", "");
 		jsonObject.put("refresh_token", "testRefreshToken");
 		when(courseraComponent.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
-		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
+		doNothing().when(fileOpUtil).writeToFile(Mockito.anyObject());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
 
@@ -115,7 +106,7 @@ public class CourseControllerTests {
 		jsonObject.put("access_token", "testAccessToken");
 		jsonObject.put("refresh_token", "");
 		when(courseraComponent.getAccessToken(Mockito.anyString(), Mockito.any(RestTemplate.class))).thenReturn(jsonObject);
-		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
+		doNothing().when(fileOpUtil).writeToFile(Mockito.anyObject());
 		mockMvc.perform(get("/callback").param("code", code)).andExpect(status().isOk());
 	}
 	

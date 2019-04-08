@@ -1,7 +1,6 @@
 package com.yash.coursera.integration.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,30 +18,18 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.config.BatchConfig;
-import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
-import com.yash.coursera.integration.model.User;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -90,7 +77,7 @@ public class CourseController {
 	CourseraComponent courseraComponent;
 
 	@Autowired
-	CommonUtils commonUtils;
+	FileOpUtils commonUtils;
 
 	@ApiIgnore
 	@RequestMapping(value = "/callback", method = RequestMethod.GET)
@@ -103,7 +90,8 @@ public class CourseController {
 			accessToken = (String) JsonObject.get(GlobalConstants.ACCESS_TOKEN_KEY);
 			refreshToken = (String) JsonObject.get(GlobalConstants.REFRESH_TOKEN_KEY);
 			if (accessToken != "" && refreshToken != "")
-				commonUtils.writeToFile(accessToken, refreshToken);
+				commonUtils.writeToFile(new String[] { GlobalConstants.ACCESS_TOKEN_KEY + "=" + accessToken,
+						GlobalConstants.REFRESH_TOKEN_KEY + "=" + refreshToken });
 		}
 		return "Tokens Generated: <br>AccessToken: " + accessToken + "<br> " + " RefreshToken: " + refreshToken;
 	}

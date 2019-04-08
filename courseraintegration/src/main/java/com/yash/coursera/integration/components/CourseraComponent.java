@@ -13,7 +13,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.ApiResponse;
@@ -55,7 +54,7 @@ public class CourseraComponent {
 	private String accessToken, refreshToken;
 	
 	@Autowired
-	CommonUtils commonUtils;
+	FileOpUtils commonUtils;
 
 	
 	RestTemplate restTemplate = new RestTemplate();
@@ -96,7 +95,8 @@ public class CourseraComponent {
 		String body = response.getBody();
 		JSONObject jsonObj = new JSONObject(body);
 		accessToken = (String) jsonObj.get(GlobalConstants.ACCESS_TOKEN_KEY);
-		commonUtils.writeToFile(accessToken, refreshToken);
+		commonUtils.writeToFile(new String[] { GlobalConstants.ACCESS_TOKEN_KEY + "=" + accessToken,
+				GlobalConstants.REFRESH_TOKEN_KEY + "=" + refreshToken });
 		return accessToken;
 	}
 
