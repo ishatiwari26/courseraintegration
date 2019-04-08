@@ -2,26 +2,33 @@ package com.yash.coursera.integration;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.RandomAccessFile;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.yash.coursera.integration.helper.FileOpUtils;
 
+@RunWith(MockitoJUnitRunner.class)
 public class FileOpUtilTest {
 	
+	@InjectMocks
+	private FileOpUtils fileOpUtils;
 	
 	@Test
 	public void readAccessToken() {
-		FileOpUtils fileOpUtil =  new FileOpUtils();
-		Map<String, String> map = fileOpUtil.readAccessToken();
-		assertEquals("test", "test");
+		Map<String, String> map = fileOpUtils.readAccessToken();
+		assertEquals("test", map.get("access_token"));
+		assertEquals("test", map.get("refresh_token"));
 	}
 	
 	@Test
 	public void writeAccessToken() {
-		FileOpUtils fileOpUtil =  new FileOpUtils();
-		fileOpUtil.writeToFile(new String[] {"access_token=test","refresh_token=test"});
+		fileOpUtils.writeToFile(new String[] {"access_token=test","refresh_token=test"});
 	}
 
 

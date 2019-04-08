@@ -33,6 +33,21 @@ public class ResponseReader implements ItemReader<Elements> {
 	private Integer limitCountPerRead;
 	private Integer index = 0;
 	private String apiUrl;
+	
+	private ApiResponse apiResponse;
+	private BatchConfig jobConfigurer;
+	private JobExecution jobExecution;
+	private String accessToken, refreshToken;
+	
+	@Autowired
+	private FileOpUtils fileOpUtils;
+	
+	HttpHeaders headers = new HttpHeaders();
+	RestTemplate restTemplate = new RestTemplate();
+	
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
 	public BatchConfig getJobConfigurer() {
 		return jobConfigurer;
 	}
@@ -43,20 +58,6 @@ public class ResponseReader implements ItemReader<Elements> {
 
 	public void setIndex(Integer index) {
 		this.index = index;
-	}
-
-	private ApiResponse apiResponse;
-	private BatchConfig jobConfigurer;
-	private JobExecution jobExecution;
-	HttpHeaders headers = new HttpHeaders();
-	RestTemplate restTemplate = new RestTemplate();
-	private String accessToken, refreshToken;
-	
-	@Autowired
-	FileOpUtils fileOpUtils;
-	
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
 	}
 
 	public int getIndex() {
@@ -91,7 +92,7 @@ public class ResponseReader implements ItemReader<Elements> {
 	}
 	
 	@Override
-	public Elements read() throws IOException, CustomeNullElementException {
+	public Elements read() throws IOException{
 
 		apiResponse = getContentsList("?start=" + index + "&limit=100");
 

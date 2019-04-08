@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class CommonUtils {
 	
 	@Autowired
-	FileOpUtils fileOpUtils;
+	private FileOpUtils fileOpUtils;
 
 	public void writeToFile(String accessToken, String refreshToken) {
 		String[] str = new String[] { GlobalConstants.ACCESS_TOKEN_KEY + "=" + accessToken,

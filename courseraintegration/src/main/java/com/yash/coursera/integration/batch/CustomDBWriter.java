@@ -14,26 +14,33 @@ import com.yash.coursera.integration.model.SFLmsMapper;
 @Component
 public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 
-	private CourseraAPIDataDao dao;
+	private CourseraAPIDataDao courseraAPIDataDao;
 	private JobExecution jobExecution;
 	private String jobName;
 
-	public CustomDBWriter(CourseraAPIDataDao dao) {
-		this.dao = dao;
+	public CustomDBWriter(CourseraAPIDataDao courseraAPIDataDao) {
+		this.courseraAPIDataDao = courseraAPIDataDao;
 	}
 
 	public CustomDBWriter() {
 	}
 
+	public CourseraAPIDataDao getDao() {
+		return courseraAPIDataDao;
+	}
+	
+	public void setDao(CourseraAPIDataDao courseraAPIDataDao) {
+		this.courseraAPIDataDao = courseraAPIDataDao;
+	}
 	@Override
 	public void write(List<? extends List<SFLmsMapper>> mappers) throws Exception {
 		System.out.println("mappers.get(0) size>>>>" + mappers.get(0).size());
 		if (jobName.equals("loadProgramAPI"))
-			dao.insertProgram(mappers.get(0));
+			courseraAPIDataDao.insertProgram(mappers.get(0));
 		else if (jobName.equals("loadContentAPI"))
-			dao.insertContent(mappers.get(0));
+			courseraAPIDataDao.insertContent(mappers.get(0));
 		else // if(jobName.equals("loadStatusAPI"))
-			dao.insertStatus(mappers.get(0));
+			courseraAPIDataDao.insertStatus(mappers.get(0));
 	}
 
 	@BeforeStep
@@ -41,20 +48,13 @@ public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 		jobExecution = stepExecution.getJobExecution();
 		jobName = jobExecution.getJobParameters().getString("jobName");
 		if (jobName.equals("loadProgramAPI"))
-			dao.deleteProgram();
+			courseraAPIDataDao.deleteProgram();
 		else if (jobName.equals("loadContentAPI"))
-			dao.deleteContent();
+			courseraAPIDataDao.deleteContent();
 		else // if(jobName.equals("loadStatusAPI"))
-			dao.deleteStatus();
+			courseraAPIDataDao.deleteStatus();
 	}
 
-	public CourseraAPIDataDao getDao() {
-		return dao;
-	}
-
-	public void setDao(CourseraAPIDataDao dao) {
-		this.dao = dao;
-	}
 	
 	
 }

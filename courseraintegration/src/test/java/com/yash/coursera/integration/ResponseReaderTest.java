@@ -7,7 +7,10 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.List;import org.apache.poi.ss.formula.atp.AnalysisToolPak;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.poi.ss.formula.atp.AnalysisToolPak;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.yash.coursera.integration.Exceptions.CustomeNullElementException;
 import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.model.ApiResponse;
@@ -53,6 +57,9 @@ public class ResponseReaderTest {
 
 	@Mock
 	private HttpHeaders headers;
+	
+	/*@Mock
+	private CollectionUtils coll;*/
 
 
 	@Before
@@ -70,12 +77,13 @@ public class ResponseReaderTest {
 		element.setContentType("testContentType");
 		List<Element> listOfElements = new ArrayList<>();
 		listOfElements.add(element);
+//		Mockito.when(CollectionUtils.isEmpty(listOfElements)).thenReturn(true);
 		Mockito.when(responseReader.getContentsList(Mockito.anyString())).thenReturn(apiResponse);
 		Mockito.when(apiResponse.getElements()).thenReturn(listOfElements);
 		Assert.assertEquals(listOfElements, responseReader.read());
-	}
+	}*/
 
-	@Test
+	/*@Test
 	public void shouldGetContentsList() {
 		Mockito.when(responseReader.callContentsAPI(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(apiResponse);

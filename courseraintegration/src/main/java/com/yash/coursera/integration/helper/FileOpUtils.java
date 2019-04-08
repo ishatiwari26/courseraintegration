@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -16,8 +15,6 @@ public class FileOpUtils {
 
 	public void writeToFile(String[] str) {
 
-		// Get the file reference
-		Path path = null;
 		try {
 			URL url = getResourceUrl();
 
@@ -28,7 +25,6 @@ public class FileOpUtils {
 			writer.writeBytes(str[1] + "\n");
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

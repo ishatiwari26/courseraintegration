@@ -1,5 +1,6 @@
 package com.yash.coursera.integration;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doNothing;
 
 import org.json.JSONObject;
@@ -75,7 +76,7 @@ public class CourseraComponentTest {
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
 		doNothing().when(commonUtils).writeToFile(Mockito.anyString(), Mockito.anyString());
-		courseraComponent.getNewAccessToken(refreshToken);
+		assertEquals(tokenJSON.get("access_token"),courseraComponent.getNewAccessToken(refreshToken));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -86,7 +87,7 @@ public class CourseraComponentTest {
 		Mockito.mock(HttpEntity.class);
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		courseraComponent.callProgramsAPI(Mockito.anyInt(), Mockito.anyInt(), accessToken);
+		assertEquals(response,courseraComponent.callProgramsAPI(0, 0, accessToken));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -97,7 +98,7 @@ public class CourseraComponentTest {
 		Mockito.mock(HttpEntity.class);
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		courseraComponent.callContentsAPI(Mockito.any(Integer.class), Mockito.any(Integer.class), accessToken);
+		assertEquals(response,courseraComponent.callContentsAPI(0, 0, accessToken));
 	}
 	@SuppressWarnings("unchecked")
 	@Test
@@ -107,6 +108,6 @@ public class CourseraComponentTest {
 		Mockito.mock(HttpEntity.class);
 		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
-		courseraComponent.postInvitation(Mockito.any(String.class), accessToken, Mockito.any(User.class));
+		courseraComponent.postInvitation(Mockito.any(String.class),accessToken, Mockito.any(User.class));
 	}
 }

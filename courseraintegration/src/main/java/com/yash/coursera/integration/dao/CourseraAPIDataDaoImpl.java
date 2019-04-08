@@ -22,7 +22,7 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 	DataSource dataSource;
 
 	@PostConstruct
-	private void initialize() {
+	public void initialize() {
 		setDataSource(dataSource);
 	}
 
@@ -116,8 +116,8 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 
 	@Override
 	public void deleteStatus() {
-		/*String sql = "delete from status";
-		getJdbcTemplate().execute(sql);*/
+		String sql = "delete from status";
+		getJdbcTemplate().execute(sql);
 	}
 
 
