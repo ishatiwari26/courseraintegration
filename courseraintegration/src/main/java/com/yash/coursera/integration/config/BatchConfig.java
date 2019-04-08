@@ -13,6 +13,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.yash.coursera.integration.batch.CustomDBWriter;
@@ -20,7 +21,6 @@ import com.yash.coursera.integration.batch.InviteProcessor;
 import com.yash.coursera.integration.batch.InviteWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
-import com.yash.coursera.integration.batch.ResponseWriter;
 import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.helper.GlobalConstants;
@@ -38,6 +38,15 @@ public class BatchConfig {
 
 	@Autowired
 	CourseraComponent courseraComponent;
+	
+	@Autowired
+	ResponseReader reader;
+	
+	@Autowired
+	ResponseProcessor processor;
+	
+	@Autowired
+	CustomDBWriter writer;
 
 	@Autowired
 	StepBuilderFactory stepBuilderFactory;
@@ -73,16 +82,19 @@ public class BatchConfig {
 	}
 
 	public ItemReader<Elements> reader() throws MalformedURLException {
-		ResponseReader reader = new ResponseReader(GlobalConstants.REQUEST_METHOD, 0, this, limitCountPerRead);
+	//	ResponseReader reader = new ResponseReader(this, limitCountPerRead);
+		reader.setJobConfigurer(this);
+		reader.setLimitCountPerRead(limitCountPerRead);
 		return reader;
 	}
 
 	public ItemProcessor<Elements, List<SFLmsMapper>> processor() {
-		return new ResponseProcessor();
+		return processor;
 	}
 
 	public ItemWriter<List<SFLmsMapper>> dbwriter() {
-		CustomDBWriter writer = new CustomDBWriter(courseraAPIDataDao);
+	//	CustomDBWriter writer = new CustomDBWriter(courseraAPIDataDao);
+		writer.setDao(courseraAPIDataDao);
 		return writer;
 	}
 

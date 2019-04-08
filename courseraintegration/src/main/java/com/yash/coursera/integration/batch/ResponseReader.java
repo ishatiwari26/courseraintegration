@@ -9,6 +9,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,14 +33,27 @@ public class ResponseReader implements ItemReader<Elements> {
 	private Integer limitCountPerRead;
 	private Integer index = 0;
 	private String apiUrl;
-	private String requestMethod;
-	private Integer jobCount;
+	public BatchConfig getJobConfigurer() {
+		return jobConfigurer;
+	}
+
+	public void setJobConfigurer(BatchConfig jobConfigurer) {
+		this.jobConfigurer = jobConfigurer;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
 	private ApiResponse apiResponse;
 	private BatchConfig jobConfigurer;
 	private JobExecution jobExecution;
 	HttpHeaders headers = new HttpHeaders();
 	RestTemplate restTemplate = new RestTemplate();
 	private String accessToken, refreshToken;
+	
+	@Autowired
+	FileOpUtils fileOpUtils;
 	
 	public void setRestTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
@@ -61,9 +75,7 @@ public class ResponseReader implements ItemReader<Elements> {
 		this.limitCountPerRead = limitCountPerRead;
 	}
 
-	public ResponseReader(String requestMethod, Integer jobCount, BatchConfig jobConfigurer, Integer limitCountPerRead) {
-		this.requestMethod = requestMethod;
-		this.jobCount = jobCount;
+	public ResponseReader(BatchConfig jobConfigurer, Integer limitCountPerRead) {
 		index = 0;
 		this.jobConfigurer = jobConfigurer;
 		this.limitCountPerRead = limitCountPerRead;
@@ -91,29 +103,30 @@ public class ResponseReader implements ItemReader<Elements> {
 				elem = new Elements();
 				elem.setElement(list);
 			}
-			jobCount++;
 
 		} catch (IndexOutOfBoundsException ex) {
 			return null;
 		}
-		}
+		/*}
 		else{
-			throw new CustomeNullElementException("No any Elements found by coursera");
+			throw new CustomeNullElementException("No any Elements found by coursera");*/
 		}
 		return elem;
 	}
 	
 	public ApiResponse getContentsList(String queryParams) {
 		ApiResponse response = null;
-		Map<String, String> tokensMap = FileOpUtils.readAccessToken();
+		Map<String, String> tokensMap = null;
+		
 		try {
 			if (accessToken == null) {
+				tokensMap = fileOpUtils.readAccessToken();
 				accessToken = tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY);
 				refreshToken = tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY);
 			}
 
 			if (accessToken != null) {
-				response = callContentsAPI(queryParams,tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY));
+				response = callContentsAPI(queryParams,accessToken);
 			}
 			/*Map<String, String> tokensMap = FileOpUtils.readAccessToken();
 			if(!tokensMap.isEmpty()){
@@ -144,6 +157,8 @@ public class ResponseReader implements ItemReader<Elements> {
 		index = index + limitCountPerRead;
 		return response.getBody();
 	}
+	
+	
 
 
 }

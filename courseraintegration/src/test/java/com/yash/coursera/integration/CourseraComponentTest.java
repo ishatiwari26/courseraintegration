@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -20,7 +19,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.components.CourseraComponent;
-import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.CommonUtils;
 import com.yash.coursera.integration.model.User;
 
@@ -34,13 +32,8 @@ public class CourseraComponentTest {
 	CommonUtils commonUtils;
 
 	@Mock
-	BatchConfig config;
-
-	@Mock
 	RestTemplate restTemplate;
 
-	@Mock
-	HttpHeaders headers;
 
 	@Before
 	public void setUp() {

@@ -14,6 +14,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.helper.CommonUtils;
+import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.ApiResponse;
 import com.yash.coursera.integration.model.User;
@@ -55,6 +56,8 @@ public class CourseraComponent {
 	
 	@Autowired
 	CommonUtils commonUtils;
+
+	
 	RestTemplate restTemplate = new RestTemplate();
 	HttpHeaders headers = new HttpHeaders();
 

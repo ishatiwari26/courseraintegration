@@ -35,6 +35,9 @@ public class InviteProcessor implements ItemProcessor<User, Elements> {
 	private CourseraAPIDataDao dao;
 	
 	@Autowired
+	FileOpUtils fileOpUtils;
+	
+	@Autowired
 	private CourseraComponent courseraComponent;
 
 	private ApiResponse apiResponse;
@@ -81,7 +84,7 @@ public class InviteProcessor implements ItemProcessor<User, Elements> {
 		ApiResponse response = null;
 		try {
 			if (accessToken == null) {
-				Map<String, String> tokensMap = FileOpUtils.readAccessToken();
+				Map<String, String> tokensMap = fileOpUtils.readAccessToken();
 				accessToken = tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY);
 				refreshToken = tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY);
 			}

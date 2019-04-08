@@ -29,6 +29,9 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.yash.coursera.integration.batch.CustomDBWriter;
+import com.yash.coursera.integration.batch.ResponseProcessor;
+import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
@@ -41,6 +44,15 @@ public class BatchConfigTest {
 	
 	@Mock
 	CourseraComponent courseraComponent;
+	
+	@Mock
+	ResponseReader reader;
+	
+	@Mock
+	ResponseProcessor processor;
+	
+	@Mock
+	CustomDBWriter writer;
 	
 	@Mock
 	CourseraAPIDataDao dao;
