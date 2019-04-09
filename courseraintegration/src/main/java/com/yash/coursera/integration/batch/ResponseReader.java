@@ -13,13 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.yash.coursera.integration.Exceptions.CustomeNullElementException;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
@@ -33,21 +31,22 @@ public class ResponseReader implements ItemReader<Elements> {
 	private Integer limitCountPerRead;
 	private Integer index = 0;
 	private String apiUrl;
-	
+
 	private ApiResponse apiResponse;
 	private BatchConfig jobConfigurer;
 	private JobExecution jobExecution;
 	private String accessToken, refreshToken;
-	
+
 	@Autowired
 	private FileOpUtils fileOpUtils;
-	
+
 	HttpHeaders headers = new HttpHeaders();
 	RestTemplate restTemplate = new RestTemplate();
-	
+
 	public void setRestTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
+
 	public BatchConfig getJobConfigurer() {
 		return jobConfigurer;
 	}
@@ -84,41 +83,38 @@ public class ResponseReader implements ItemReader<Elements> {
 
 	public ResponseReader() {
 	}
-	
+
 	@BeforeStep
 	public void beforeStep(StepExecution stepExecution) {
 		jobExecution = stepExecution.getJobExecution();
 		apiUrl = jobExecution.getJobParameters().getString("apiUrl");
 	}
-	
+
 	@Override
-	public Elements read() throws IOException{
+	public Elements read() throws IOException {
 
 		apiResponse = getContentsList("?start=" + index + "&limit=100");
 
 		Elements elem = null;
-		if(apiResponse.getElements().size() > 0){
-		try {
-			List<Element> list = apiResponse.getElements();
-			if (!CollectionUtils.isEmpty(list)) {
-				elem = new Elements();
-				elem.setElement(list);
-			}
+		if (apiResponse.getElements().size() > 0) {
+			try {
+				List<Element> list = apiResponse.getElements();
+				if (!CollectionUtils.isEmpty(list)) {
+					elem = new Elements();
+					elem.setElement(list);
+				}
 
-		} catch (IndexOutOfBoundsException ex) {
-			return null;
-		}
-		/*}
-		else{
-			throw new CustomeNullElementException("No any Elements found by coursera");*/
+			} catch (IndexOutOfBoundsException ex) {
+				return null;
+			}
 		}
 		return elem;
 	}
-	
+
 	public ApiResponse getContentsList(String queryParams) {
 		ApiResponse response = null;
 		Map<String, String> tokensMap = null;
-		
+
 		try {
 			if (accessToken == null) {
 				tokensMap = fileOpUtils.readAccessToken();
@@ -127,20 +123,22 @@ public class ResponseReader implements ItemReader<Elements> {
 			}
 
 			if (accessToken != null) {
-				response = callContentsAPI(queryParams,accessToken);
+				response = callContentsAPI(queryParams, accessToken);
 			}
-			/*Map<String, String> tokensMap = FileOpUtils.readAccessToken();
-			if(!tokensMap.isEmpty()){
-				accessToken = tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY);
-				refreshToken = tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY);
-				response = callContentsAPI(queryParams);
-			}*/
+			/*
+			 * Map<String, String> tokensMap = FileOpUtils.readAccessToken();
+			 * if(!tokensMap.isEmpty()){ accessToken =
+			 * tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY); refreshToken =
+			 * tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY); response =
+			 * callContentsAPI(queryParams); }
+			 */
 		} catch (RestClientException e) {
 			try {
 				accessToken = jobConfigurer.getNewToken(tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY));
-				response = callContentsAPI(queryParams,accessToken);
+				response = callContentsAPI(queryParams, accessToken);
 			} catch (RestClientException ex) {
-				// to cover condition if exception occurs in new access token generation through
+				// to cover condition if exception occurs in new access token
+				// generation through
 				// refresh token itself
 				throw ex;
 			}
@@ -148,18 +146,16 @@ public class ResponseReader implements ItemReader<Elements> {
 		}
 		return response;
 	}
-	
-	public ApiResponse callContentsAPI(String queryParams,String accesstoken) {
-		
+
+	public ApiResponse callContentsAPI(String queryParams, String accesstoken) {
+
 		headers.set("Authorization", "Bearer " + accesstoken);
 		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-		
-		ResponseEntity<ApiResponse> response = restTemplate.exchange(apiUrl + queryParams, HttpMethod.GET, entity, ApiResponse.class);
+
+		ResponseEntity<ApiResponse> response = restTemplate.exchange(apiUrl + queryParams, HttpMethod.GET, entity,
+				ApiResponse.class);
 		index = index + limitCountPerRead;
 		return response.getBody();
 	}
-	
-	
-
 
 }

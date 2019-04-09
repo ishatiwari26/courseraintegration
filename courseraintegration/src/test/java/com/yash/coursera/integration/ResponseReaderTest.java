@@ -30,7 +30,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import com.yash.coursera.integration.Exceptions.CustomeNullElementException;
 import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.model.ApiResponse;

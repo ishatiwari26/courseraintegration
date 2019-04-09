@@ -1,14 +1,11 @@
 package com.yash.coursera.integration;
 
 import static org.junit.Assert.assertEquals;
-
-import java.io.RandomAccessFile;
 import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.yash.coursera.integration.helper.FileOpUtils;

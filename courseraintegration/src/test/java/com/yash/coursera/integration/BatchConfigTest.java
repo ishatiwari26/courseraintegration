@@ -1,6 +1,11 @@
 package com.yash.coursera.integration;
 
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -181,17 +186,24 @@ public class BatchConfigTest {
 		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
 		Assert.assertEquals(taskletStep,batchConfig.sendInviteStep());
 	}
-	/*@SuppressWarnings("unchecked")
-	@Test
+	/*@Test
 	public void shouldThorwException_WhenSendInviteStep() {
 //		exception.expect(MalformedURLException.class);
 		Mockito.when(stepBuilderFactory.get(Mockito.anyString())).thenReturn(stepBuilder);
 		Mockito.when(stepBuilder.allowStartIfComplete(false)).thenReturn(stepBuilder);
 		Mockito.when(stepBuilder.chunk(Mockito.anyInt())).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.reader(Mockito.any())).thenReturn(simpleStepBuilder);
+		Mockito.when(simpleStepBuilder.processor(itemProcessor)).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.writer(Mockito.any())).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
 		batchConfig.sendInviteStep();
+	}*/
+	/*@Test
+	public void shouldThorwException_WhenSendInviteStep() throws MalformedURLException, IOException {
+//		URLConnection connection=new URL("http://bit.ly/15sYPA7").openConnection();
+		reader.setJobConfigurer(batchConfig);
+		reader.setLimitCountPerRead(10000);
+		
 	}*/
 	@Test
 	public void shouldGetNewToken() {
