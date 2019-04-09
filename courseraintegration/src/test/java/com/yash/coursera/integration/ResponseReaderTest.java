@@ -2,15 +2,9 @@ package com.yash.coursera.integration;
 
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.poi.ss.formula.atp.AnalysisToolPak;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
