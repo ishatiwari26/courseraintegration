@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemProcessor;
@@ -27,29 +26,29 @@ import com.yash.coursera.integration.model.User;
 
 @Component
 public class InviteProcessor implements ItemProcessor<User, Elements> {
-	
+
 	@Autowired
 	BatchConfig jobConfigurer;
-	
+
 	@Autowired
 	private CourseraAPIDataDao dao;
-	
+
 	@Autowired
 	FileOpUtils fileOpUtils;
-	
+
 	@Autowired
 	private CourseraComponent courseraComponent;
 
 	private ApiResponse apiResponse;
 	private List<String> programIds;
-	List<Element> apiResponseList;
+	private List<Element> apiResponseList;
 	private String accessToken;
 	private String refreshToken;
 
 	@Override
 	public Elements process(User user) throws Exception {
 
-		if (!CollectionUtils.isEmpty(programIds)) {
+		if(! getProgramIds().isEmpty()) {
 			apiResponseList = null;
 			List<Element> tempApiResponseList = new ArrayList<>();
 			programIds.forEach(programId -> {
@@ -80,7 +79,7 @@ public class InviteProcessor implements ItemProcessor<User, Elements> {
 		return response.getBody();
 	}
 
-	public ApiResponse getInviteResponse(String programId, User user) {
+	private ApiResponse getInviteResponse(String programId, User user) {
 		ApiResponse response = null;
 		try {
 			if (accessToken == null) {
@@ -101,7 +100,6 @@ public class InviteProcessor implements ItemProcessor<User, Elements> {
 					response = callInvitationAPI(programId, user);
 				} catch (RestClientException ex) {
 					// to cover condition if exception occurs in new access token generation through
-					// refresh token itsel
 					System.out.println("unauthorized user");
 					throw ex;
 				}
@@ -118,5 +116,14 @@ public class InviteProcessor implements ItemProcessor<User, Elements> {
 	public void beforeStep(StepExecution stepExecution) {
 		programIds = dao.getProgramIds();
 	}
+
+	public List<String> getProgramIds() {
+		return programIds;
+	}
+
+	public void setProgramIds(List<String> programIds) {
+		this.programIds = programIds;
+	}
+
 
 }
