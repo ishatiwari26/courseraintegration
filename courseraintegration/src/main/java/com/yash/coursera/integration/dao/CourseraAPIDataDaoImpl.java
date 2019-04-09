@@ -69,7 +69,12 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 	public void insertContent(List<? extends SFLmsMapper> elements) {
 		String sql = "insert into courseraintegration_schema.content "
 				+ "(program_id,content_id, title,provider_id, status, launch_url, created_date,  description, thumbnail_uri ) values (?,?,?,?,?,?,?,?,?)";
-		getJdbcTemplate().batchUpdate(sql, new BatchPreparedStatementSetter() {
+		getJdbcTemplate().batchUpdate(sql, getBatchPreparedStatementSetter(elements));
+
+	}
+
+	protected BatchPreparedStatementSetter getBatchPreparedStatementSetter(List<? extends SFLmsMapper> elements) {
+		return new BatchPreparedStatementSetter() {
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
 
 				SFLmsMapper element = elements.get(i);
@@ -88,8 +93,7 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 			public int getBatchSize() {
 				return elements.size();
 			}
-		});
-
+		};
 	}
 
 	@Override
