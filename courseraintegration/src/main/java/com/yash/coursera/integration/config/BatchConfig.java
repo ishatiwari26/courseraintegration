@@ -85,6 +85,7 @@ public class BatchConfig {
 	//	ResponseReader reader = new ResponseReader(this, limitCountPerRead);
 		reader.setJobConfigurer(this);
 		reader.setLimitCountPerRead(limitCountPerRead);
+		reader.setIndex(0);
 		return reader;
 	}
 

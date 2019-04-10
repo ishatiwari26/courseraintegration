@@ -28,28 +28,29 @@ import com.yash.coursera.integration.model.Elements;
 @Component
 public class ResponseReader implements ItemReader<Elements> {
 
+	@Autowired
+	BatchConfig jobConfigurer;
+
+	@Autowired
+	FileOpUtils fileOpUtils;
+
+	HttpHeaders headers = new HttpHeaders();
+	RestTemplate restTemplate = new RestTemplate();
+
 	private Integer limitCountPerRead;
 	private Integer index = 0;
 	private String apiUrl;
 
-	private ApiResponse apiResponse;
-	private BatchConfig jobConfigurer;
-	private JobExecution jobExecution;
-	private String accessToken, refreshToken;
-
-	@Autowired
-	private FileOpUtils fileOpUtils;
-
-	HttpHeaders headers = new HttpHeaders();
-	RestTemplate restTemplate = new RestTemplate();
+	private String accessToken;
+	private String refreshToken;
 
 	public void setRestTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
 
-	public BatchConfig getJobConfigurer() {
-		return jobConfigurer;
-	}
+	/*
+	 * public BatchConfig getJobConfigurer() { return jobConfigurer; }
+	 */
 
 	public void setJobConfigurer(BatchConfig jobConfigurer) {
 		this.jobConfigurer = jobConfigurer;
@@ -59,26 +60,27 @@ public class ResponseReader implements ItemReader<Elements> {
 		this.index = index;
 	}
 
-	public int getIndex() {
-		return index;
-	}
+	/*
+	 * public int getIndex() { return index; }
+	 */
 
-	public void setIndex(int index) {
-		this.index = index;
-	}
+	/*
+	 * public void setIndex(int index) { this.index = index; }
+	 */
 
-	public Integer getLimitCountPerRead() {
-		return limitCountPerRead;
-	}
+	/*
+	 * public Integer getLimitCountPerRead() { return limitCountPerRead; }
+	 */
 
 	public void setLimitCountPerRead(Integer limitCountPerRead) {
 		this.limitCountPerRead = limitCountPerRead;
 	}
 
-	public ResponseReader(BatchConfig jobConfigurer, Integer limitCountPerRead) {
+	public ResponseReader(BatchConfig jobConfigurer, Integer limitCountPerRead, FileOpUtils fileOpUtils) {
 		index = 0;
 		this.jobConfigurer = jobConfigurer;
 		this.limitCountPerRead = limitCountPerRead;
+		this.fileOpUtils = fileOpUtils;
 	}
 
 	public ResponseReader() {
@@ -86,71 +88,57 @@ public class ResponseReader implements ItemReader<Elements> {
 
 	@BeforeStep
 	public void beforeStep(StepExecution stepExecution) {
-		jobExecution = stepExecution.getJobExecution();
+		JobExecution jobExecution = stepExecution.getJobExecution();
 		apiUrl = jobExecution.getJobParameters().getString("apiUrl");
 	}
 
 	@Override
 	public Elements read() throws IOException {
 
-		apiResponse = getContentsList("?start=" + index + "&limit=100");
+		ApiResponse apiResponse = getContentsList("?start=" + index + "&limit=100");
 
 		Elements elem = null;
-		if (apiResponse.getElements().size() > 0) {
-			try {
+		try {
+			if (apiResponse != null) {
 				List<Element> list = apiResponse.getElements();
 				if (!CollectionUtils.isEmpty(list)) {
 					elem = new Elements();
 					elem.setElement(list);
 				}
-
-			} catch (IndexOutOfBoundsException ex) {
-				return null;
 			}
+
+		} catch (IndexOutOfBoundsException ex) {
+			return null;
 		}
 		return elem;
 	}
 
-	public ApiResponse getContentsList(String queryParams) {
+	private ApiResponse getContentsList(String queryParams) {
 		ApiResponse response = null;
-		Map<String, String> tokensMap = null;
-
 		try {
 			if (accessToken == null) {
-				tokensMap = fileOpUtils.readAccessToken();
+				Map<String, String> tokensMap = fileOpUtils.readAccessToken();
 				accessToken = tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY);
 				refreshToken = tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY);
 			}
-
 			if (accessToken != null) {
 				response = callContentsAPI(queryParams, accessToken);
 			}
-			/*
-			 * Map<String, String> tokensMap = FileOpUtils.readAccessToken();
-			 * if(!tokensMap.isEmpty()){ accessToken =
-			 * tokensMap.get(GlobalConstants.ACCESS_TOKEN_KEY); refreshToken =
-			 * tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY); response =
-			 * callContentsAPI(queryParams); }
-			 */
 		} catch (RestClientException e) {
 			try {
-				accessToken = jobConfigurer.getNewToken(tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY));
+				accessToken = jobConfigurer.getNewToken(refreshToken);
 				response = callContentsAPI(queryParams, accessToken);
 			} catch (RestClientException ex) {
-				// to cover condition if exception occurs in new access token
-				// generation through
-				// refresh token itself
 				throw ex;
 			}
-
 		}
 		return response;
 	}
 
-	public ApiResponse callContentsAPI(String queryParams, String accesstoken) {
+	private ApiResponse callContentsAPI(String queryParams, String accesstoken) {
 
 		headers.set("Authorization", "Bearer " + accesstoken);
-		HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+		HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
 		ResponseEntity<ApiResponse> response = restTemplate.exchange(apiUrl + queryParams, HttpMethod.GET, entity,
 				ApiResponse.class);
