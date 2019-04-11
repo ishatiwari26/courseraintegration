@@ -59,10 +59,10 @@ public class ResponseReaderTest {
 	private JobExecution jobExecution;
 
 	@Mock
-	FileOpUtils fileOpUtils;
+	private FileOpUtils fileOpUtils;
 
 	@Mock
-	JobParameters jobParameters;
+	private JobParameters jobParameters;
 
 	@Rule
 	public ExpectedException exceptionRule = ExpectedException.none();
@@ -74,7 +74,7 @@ public class ResponseReaderTest {
 		responseReader.setIndex(0);
 
 		StepExecution stepExecution = MetaDataInstanceFactory.createStepExecution();
-		stepExecution.getJobExecution().getExecutionContext().put("testKey", "testValue");
+		stepExecution.getJobExecution().getExecutionContext().put("apiUrl", "testApiUrl");
 		responseReader.beforeStep(stepExecution);
 	}
 

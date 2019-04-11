@@ -29,10 +29,10 @@ import com.yash.coursera.integration.model.Elements;
 public class ResponseReader implements ItemReader<Elements> {
 
 	@Autowired
-	BatchConfig jobConfigurer;
+	private BatchConfig jobConfigurer;
 
 	@Autowired
-	FileOpUtils fileOpUtils;
+	private FileOpUtils fileOpUtils;
 
 	HttpHeaders headers = new HttpHeaders();
 	RestTemplate restTemplate = new RestTemplate();
