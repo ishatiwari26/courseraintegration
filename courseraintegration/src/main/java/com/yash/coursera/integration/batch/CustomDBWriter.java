@@ -6,6 +6,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
@@ -14,11 +15,12 @@ import com.yash.coursera.integration.model.SFLmsMapper;
 @Component
 public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 
+	@Autowired
 	private CourseraAPIDataDao courseraAPIDataDao;
 	private JobExecution jobExecution;
 	private String jobName;
 
-	public CustomDBWriter(CourseraAPIDataDao courseraAPIDataDao) {
+	/*public CustomDBWriter(CourseraAPIDataDao courseraAPIDataDao) {
 		this.courseraAPIDataDao = courseraAPIDataDao;
 	}
 
@@ -27,20 +29,24 @@ public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 
 	public CourseraAPIDataDao getDao() {
 		return courseraAPIDataDao;
-	}
+	}*/
 	
 	public void setDao(CourseraAPIDataDao courseraAPIDataDao) {
 		this.courseraAPIDataDao = courseraAPIDataDao;
 	}
 	@Override
-	public void write(List<? extends List<SFLmsMapper>> mappers) throws Exception {
-		System.out.println("mappers.get(0) size>>>>" + mappers.get(0).size());
+	public void write(List<? extends List<SFLmsMapper>> sfLMSMappers) throws Exception {
+		try{
 		if (jobName.equals("loadProgramAPI"))
-			courseraAPIDataDao.insertProgram(mappers.get(0));
+			courseraAPIDataDao.insertProgram(sfLMSMappers.get(0));
 		else if (jobName.equals("loadContentAPI"))
-			courseraAPIDataDao.insertContent(mappers.get(0));
-		else // if(jobName.equals("loadStatusAPI"))
-			courseraAPIDataDao.insertStatus(mappers.get(0));
+			courseraAPIDataDao.insertContent(sfLMSMappers.get(0));
+		else 
+			courseraAPIDataDao.insertStatus(sfLMSMappers.get(0));
+		}
+		catch (IndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@BeforeStep
@@ -51,7 +57,7 @@ public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 			courseraAPIDataDao.deleteProgram();
 		else if (jobName.equals("loadContentAPI"))
 			courseraAPIDataDao.deleteContent();
-		else // if(jobName.equals("loadStatusAPI"))
+		else 
 			courseraAPIDataDao.deleteStatus();
 	}
 
