@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +38,11 @@ import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.ApiResponse;
+import com.yash.coursera.integration.model.Content;
 import com.yash.coursera.integration.model.Element;
 import com.yash.coursera.integration.model.Elements;
+import com.yash.coursera.integration.model.Instructor;
+import com.yash.coursera.integration.model.Program;
 
 @RunWith(SpringRunner.class)
 public class ResponseReaderTest {
@@ -135,8 +139,55 @@ public class ResponseReaderTest {
 		Element element = new Element();
 		element.setContentId("testContentId");
 		element.setContentType("testContentType");
+		element.setId("testId");
+		element.setTagline("testTagline");
+		element.setName("testName");
+		element.setUrl("testUrl");
+		element.setPartners("testPartners");
+		element.setDescription("testDescription");
+		element.setLanguageCode("testLanguageCode");
+		element.setFullName("testFullName");
+		element.setExternalId("testExternalId");
+		element.setEmail("testEmail");
+		element.setUserId("testUserId");
+		element.setIsCompleted(false);
+		element.setCompletedAt(new Date(System.currentTimeMillis()));
+		element.setGrade("testGrade");
+		
+		Instructor instructor=new Instructor();
+		instructor.setDepartment("testDepartment");
+		instructor.setName("testInstructorName");
+		instructor.setPhotoUrl("http://testImage.img");
+		instructor.setTitle("textTitle");
+		
+		List<Instructor> listOfInstructor=new ArrayList<>();
+		listOfInstructor.add(instructor);
+		
+		Content content=new Content();
+		content.setContentId("testContentID");
+		content.setContentType("testContentType");
+		
+		List<Content> listOfContent=new ArrayList<>();
+		listOfContent.add(content);
+		Program program=new Program();
+		program.setContentUrl("http://testContentUrl.com");
+		program.setProgramId("testProgramId");
+		List<Program> listOfProgram =new ArrayList<>();
+		listOfProgram.add(program);
+		
+		Object extraMetadata=new Object();
+		Object partners=new Object();
+		
+		element.setInstructors(listOfInstructor);
+		element.setContentIds(listOfContent);
+		element.setPrograms(listOfProgram);
+		element.setExtraMetadata(extraMetadata);
+		element.setPartners(partners);
+		
+		
 		List<Element> listOfElements = new ArrayList<>();
 		listOfElements.add(element);
+		
 		ApiResponse apiGetResponse = new ApiResponse();
 		apiGetResponse.setElements(listOfElements);
 		return apiGetResponse;

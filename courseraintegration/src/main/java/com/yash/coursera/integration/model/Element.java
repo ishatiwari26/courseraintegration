@@ -15,15 +15,16 @@ public class Element {
 	private String id;
 	private String tagline;
 	private String name;
-	private List<Content> contentIds;
 	private String url;
-	private Object partners;
 	private String contentId;
+	private String contentType;
 	private String description;
-	private List<Program> programs;
 	private String languageCode;
 	private Object extraMetadata;
-	private String contentType;
+	private Object partners;
+
+	private List<Content> contentIds;
+	private List<Program> programs;
 	private List<Instructor> instructors;
 	
 	private String fullName;
