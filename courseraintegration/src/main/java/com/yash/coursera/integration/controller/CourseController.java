@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
@@ -29,6 +31,7 @@ import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
+import com.yash.coursera.integration.helper.MoveSFTPFiles;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -46,24 +49,45 @@ public class CourseController {
 
 	@Value("${CONTENT_OUTPUT_FILE}")
 	private String contentFileName;
-	
+
 	@Value("${STATUS_OUTPUT_FILE}")
 	private String statusFileName;
-	
+
 	@Value("${GET_PROGRAM_API}")
 	private String getProgramListApi;
 
 	@Value("${GET_CONTENTS_API}")
 	private String getContentsApi;
-	
+
 	@Value("${GET_STATUS_API}")
 	private String getStatusApi;
-	
+
 	@Value("${INVITATION_OUTPUT_FILE}")
 	private String invitationFileName;
 
 	@Value("${GET_INVITATION_API}")
 	private String getInvitationApi;
+
+	@Value("${SFTPHOST}")
+	private String getSFTPHost;
+
+	@Value("${SFTPUSER}")
+	private String getSFTPUser;
+
+	@Value("${SFTPPASS}")
+	private String getSFTPPassword;
+
+	@Value("${SFTPWORKINGDIR}")
+	private String getSFTPInboundDirectory;
+
+	@Value("${SFTPPROCESSDIR}")
+	private String getSFTPProcessDirectory;
+
+	@Value("${LOCALPATH}")
+	private String getLocalPath;
+
+	@Value("${FILE_NAME}")
+	private String getFileName;
 
 	String accessToken, refreshToken;
 
@@ -79,6 +103,11 @@ public class CourseController {
 	@Autowired
 	FileOpUtils commonUtils;
 
+	@Autowired
+	MoveSFTPFiles moveSFTPFiles;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CourseController.class);
+
 	@ApiIgnore
 	@RequestMapping(value = "/callback", method = RequestMethod.GET)
 	public String callback(@RequestParam(required = false, name = GlobalConstants.CODE_KEY) String code,
@@ -93,6 +122,11 @@ public class CourseController {
 				commonUtils.writeToFile(new String[] { GlobalConstants.ACCESS_TOKEN_KEY + "=" + accessToken,
 						GlobalConstants.REFRESH_TOKEN_KEY + "=" + refreshToken });
 		}
+		LOGGER.trace("callback needed more information - {}", refreshToken);
+		LOGGER.debug("callback needed to debug - {}", refreshToken);
+		LOGGER.info("callback took input - {}", refreshToken);
+		LOGGER.warn("callback needed to warn - {}", refreshToken);
+		LOGGER.error("callback encountered an error with value - {}", refreshToken);
 		return "Tokens Generated: <br>AccessToken: " + accessToken + "<br> " + " RefreshToken: " + refreshToken;
 	}
 
@@ -103,9 +137,23 @@ public class CourseController {
 
 	}
 
+	@GetMapping(value = "/accessSFTPFile")
+	public boolean moveFileFromInbondToProcess() {
+		boolean SFTPStatus = false;
+		try {
+			moveSFTPFiles = new MoveSFTPFiles(getSFTPHost, getSFTPUser, getSFTPPassword);
+			SFTPStatus = moveSFTPFiles.moveSFTFileInboundToProcess(getSFTPInboundDirectory.concat(getFileName),
+					getSFTPProcessDirectory, getLocalPath);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return SFTPStatus;
+	}
+
 	@GetMapping(value = "/loadContentAPI")
 	public BatchStatus loadContentAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
-	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		JobExecution ex = null;
 
 		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
@@ -118,6 +166,7 @@ public class CourseController {
 			ex = jobLauncher.run(batchConfig.processJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
+			LOGGER.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return ex.getStatus();
@@ -125,7 +174,7 @@ public class CourseController {
 
 	@GetMapping(value = "/loadProgramAPI")
 	public BatchStatus loadProgramAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
-	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
 		JobExecution ex = null;
 
@@ -139,13 +188,15 @@ public class CourseController {
 			ex = jobLauncher.run(batchConfig.processJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
+			LOGGER.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return ex.getStatus();
 	}
+
 	@GetMapping(value = "/loadStatusAPI")
 	public BatchStatus loadStatusAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
-	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
 		JobExecution ex = null;
 
@@ -159,6 +210,7 @@ public class CourseController {
 			ex = jobLauncher.run(batchConfig.processJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
+			LOGGER.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return ex.getStatus();
@@ -166,7 +218,7 @@ public class CourseController {
 
 	@GetMapping(value = "/loadInvitationAPI")
 	public BatchStatus loadInvitationAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
-	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		JobExecution ex = null;
 
 		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
@@ -180,46 +232,52 @@ public class CourseController {
 			ex = jobLauncher.run(batchConfig.processInviteJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
+			LOGGER.error(e.getMessage());
 			e.printStackTrace();
 		}
 		return ex.getStatus();
 	}
 
-	/*@ApiOperation(value = "send invite to users", response = List.class)
-
-	@ApiResponses(value = { @ApiResponse(code = 201, message = "Successfully send invite"),
-
-			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-
-			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-
-	@RequestMapping(value = "/invitation/{programId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public ResponseEntity<String> getInviteList(@PathVariable("programId") String programId,
-			@RequestBody User userInvitation, HttpServletRequest req, HttpServletResponse res) {
-		ResponseEntity<String> response = null;
-		Map<String, String> tokensMap = FileOpUtils.readAccessToken();
-		try {
-
-			if (tokensMap.get("access_token") == null || tokensMap.get("access_token") == "") {
-				response = new ResponseEntity<>("Authorize client and generate token by calling /generateToken API",
-						HttpStatus.UNAUTHORIZED);
-			} else {
-				response = courseraComponent.postInvitation(programId, tokensMap.get("access_token"), userInvitation);
-			}
-
-		} catch (RestClientException e) {
-			try {
-				accessToken = courseraComponent.getNewAccessToken(tokensMap.get("refresh_token"));
-				response = courseraComponent.postInvitation(programId, accessToken, userInvitation);
-			} catch (RestClientException ex) {
-				response = new ResponseEntity<>("Authorize client  and generate token by calling /generateToken API",
-						HttpStatus.UNAUTHORIZED);
-			}
-		}
-		return response;
-	}*/
+	/*
+	 * @ApiOperation(value = "send invite to users", response = List.class)
+	 * 
+	 * @ApiResponses(value = { @ApiResponse(code = 201, message =
+	 * "Successfully send invite"),
+	 * 
+	 * @ApiResponse(code = 401, message =
+	 * "You are not authorized to view the resource"),
+	 * 
+	 * @ApiResponse(code = 403, message =
+	 * "Accessing the resource you were trying to reach is forbidden"),
+	 * 
+	 * @ApiResponse(code = 404, message =
+	 * "The resource you were trying to reach is not found") })
+	 * 
+	 * @RequestMapping(value = "/invitation/{programId}", method =
+	 * RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes
+	 * = MediaType.APPLICATION_JSON_VALUE)
+	 * 
+	 * @ResponseBody public ResponseEntity<String>
+	 * getInviteList(@PathVariable("programId") String programId,
+	 * 
+	 * @RequestBody User userInvitation, HttpServletRequest req,
+	 * HttpServletResponse res) { ResponseEntity<String> response = null;
+	 * Map<String, String> tokensMap = FileOpUtils.readAccessToken(); try {
+	 * 
+	 * if (tokensMap.get("access_token") == null ||
+	 * tokensMap.get("access_token") == "") { response = new ResponseEntity<>
+	 * ("Authorize client and generate token by calling /generateToken API",
+	 * HttpStatus.UNAUTHORIZED); } else { response =
+	 * courseraComponent.postInvitation(programId,
+	 * tokensMap.get("access_token"), userInvitation); }
+	 * 
+	 * } catch (RestClientException e) { try { accessToken =
+	 * courseraComponent.getNewAccessToken(tokensMap.get("refresh_token"));
+	 * response = courseraComponent.postInvitation(programId, accessToken,
+	 * userInvitation); } catch (RestClientException ex) { response = new
+	 * ResponseEntity<>
+	 * ("Authorize client  and generate token by calling /generateToken API",
+	 * HttpStatus.UNAUTHORIZED); } } return response; }
+	 */
 
 }

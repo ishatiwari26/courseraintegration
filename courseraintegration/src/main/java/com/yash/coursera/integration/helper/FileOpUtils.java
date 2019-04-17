@@ -8,11 +8,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import com.yash.coursera.integration.components.CourseraComponent;
 
 @Component
 public class FileOpUtils {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileOpUtils.class);
+	
 	public void writeToFile(String[] str) {
 
 		try {
@@ -25,6 +30,7 @@ public class FileOpUtils {
 			writer.writeBytes(str[1] + "\n");
 			writer.close();
 		} catch (IOException e) {
+			LOGGER.error(e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -49,6 +55,7 @@ public class FileOpUtils {
 				return tokensMap;
 			}
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			e.printStackTrace();
 		}
 

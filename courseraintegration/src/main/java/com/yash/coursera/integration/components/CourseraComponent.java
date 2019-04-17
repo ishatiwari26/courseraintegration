@@ -1,6 +1,8 @@
 package com.yash.coursera.integration.components;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -13,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.yash.coursera.integration.controller.CourseController;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.ApiResponse;
