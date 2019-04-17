@@ -35,8 +35,6 @@ public class MoveSFTPFiles {
 	}
 
 	private void connect() {
-
-		System.out.println("connecting..." + host);
 		try {
 			jsch = new JSch();
 			session = jsch.getSession(user, host);
@@ -55,7 +53,6 @@ public class MoveSFTPFiles {
 	}
 
 	private void disconnect() {
-		System.out.println("disconnecting...");
 		sftpChannel.disconnect();
 		channel.disconnect();
 		session.disconnect();
@@ -105,25 +102,5 @@ public class MoveSFTPFiles {
 		}
 		disconnect();
 		return isMoved;
-	}
-
-	public static void main(String[] args) {
-		String SFTPHOST = "sftp.c4b-integration.com";
-
-		String SFTPUSER = "john_deere_client";
-
-		String SFTPPASS = "Sot@]}_HRHX5";
-
-		String SFTPWORKINGDIR = "/uploads/dev/Inbound/";
-		String SFTPPROCESSDIR = "/uploads/dev/Process/";
-
-		String localPath = "D:/temp/";
-		String fileName="inbound.csv";
-
-		MoveSFTPFiles ftp = new MoveSFTPFiles(SFTPHOST, SFTPUSER, SFTPPASS);
-
-		boolean isMoved = ftp.moveSFTFileInboundToProcess(SFTPWORKINGDIR+fileName, SFTPPROCESSDIR, localPath);
-		System.out.println(isMoved);
-
 	}
 }
