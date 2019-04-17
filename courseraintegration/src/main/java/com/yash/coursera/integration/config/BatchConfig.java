@@ -13,12 +13,10 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.yash.coursera.integration.batch.CustomDBWriter;
-import com.yash.coursera.integration.batch.InviteProcessor;
-import com.yash.coursera.integration.batch.InviteWriter;
+import com.yash.coursera.integration.batch.InvitationWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
 import com.yash.coursera.integration.components.CourseraComponent;
@@ -58,10 +56,7 @@ public class BatchConfig {
 	ItemReader<User> itemReader;
 
 	@Autowired
-	InviteProcessor inviteProcessor;
-
-	@Autowired
-	InviteWriter inviteWriter;
+	InvitationWriter inviteWriter;
 
 	public Job processJob() {
 		return jobBuilderFactory.get("processJob").incrementer(new RunIdIncrementer()).flow(getStep()).end().build();
@@ -100,22 +95,21 @@ public class BatchConfig {
 	}
 
 	public Job processInviteJob() {
-		return jobBuilderFactory.get("invitationJob").incrementer(new RunIdIncrementer()).flow(sendInviteStep()).end().build();
+		return jobBuilderFactory.get("invitationJob").incrementer(new RunIdIncrementer()).flow(inviteStep()).end().build();
 	}
 
-	public Step sendInviteStep() {
+	public Step inviteStep() {
 
 		Step stepInviteApiCall = null;
 		stepInviteApiCall = stepBuilderFactory.get(GlobalConstants.STEP_NAME).allowStartIfComplete(false)
-				.<User, Elements>chunk(3)
+				.<User, User>chunk(3)
 				.reader(itemReader)
-				.processor(inviteProcessor)
 				.writer(inviteWriter)
 				.build();
 
 		return stepInviteApiCall;
 	}
-
+	
 	public String getNewToken(String refreshToken) {
 		return courseraComponent.getNewAccessToken(refreshToken);
 	}

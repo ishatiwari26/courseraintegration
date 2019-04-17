@@ -23,6 +23,7 @@ public class GlobalConstants {
 	public static final String REQUEST_METHOD = "GET";
 	public static final String PROGRAM_API_KEY = "progamApiData";
 	public static final String CONTENT_API_KEY = "contentApiData";
-	
+	public static final String ACTIVE_STATUS = "A";
+	public static final String TERMINATE_STATUS = "T";
 
 }

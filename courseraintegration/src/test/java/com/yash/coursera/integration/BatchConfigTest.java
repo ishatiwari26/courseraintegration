@@ -184,7 +184,7 @@ public class BatchConfigTest {
 		Mockito.when(simpleStepBuilder.processor(itemProcessor)).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.writer(itemWriter)).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
-		Assert.assertEquals(taskletStep,batchConfig.sendInviteStep());
+		Assert.assertEquals(taskletStep,batchConfig.inviteStep());
 	}
 	/*@Test
 	public void shouldThorwException_WhenSendInviteStep() {

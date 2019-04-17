@@ -1,8 +1,6 @@
 package com.yash.coursera.integration.components;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -15,7 +13,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.yash.coursera.integration.controller.CourseController;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.ApiResponse;
@@ -123,15 +120,19 @@ public class CourseraComponent {
 		return response;
 	}
 
-	public ResponseEntity<ApiResponse> postInvitation(String programId, String accessToken, User user){
+	public ResponseEntity<ApiResponse> postOrDeleteInvitation(String programId, String accessToken, User user, HttpMethod requestMethod){
 		headers.set("Authorization", "Bearer " + accessToken);
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		
 		String url = inviteApiUrl + programId + "/invitations";
 		
-		HttpEntity<User> entity = new HttpEntity<User>(user, headers);
-		ResponseEntity<ApiResponse> response = restTemplate.exchange(url, HttpMethod.POST, entity, ApiResponse.class);
+		if(requestMethod == HttpMethod.DELETE) {
+			url = url + "/" + programId + "~" + user.getExternalId();
+		}
 		
+		HttpEntity<User> entity = new HttpEntity<User>(user, headers);
+		ResponseEntity<ApiResponse> response = restTemplate.exchange(url, requestMethod, entity, ApiResponse.class);
+		System.out.println(response);
 		return response;
 	}
 

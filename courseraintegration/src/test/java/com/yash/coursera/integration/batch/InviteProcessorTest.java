@@ -37,7 +37,7 @@ import com.yash.coursera.integration.model.User;
 @RunWith(SpringRunner.class)
 public class InviteProcessorTest {
 
-	@InjectMocks
+/*	@InjectMocks
 	private InviteProcessor inviteProcessor;
 
 	@Mock
@@ -189,6 +189,6 @@ public class InviteProcessorTest {
 		tokensMap.put(GlobalConstants.REFRESH_TOKEN_KEY, "refreshtoken");
 
 		return tokensMap;
-	}
+	}*/
 
 }
