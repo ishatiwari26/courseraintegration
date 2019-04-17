@@ -77,11 +77,17 @@ public class CourseController {
 	@Value("${SFTPPASS}")
 	private String getSFTPPassword;
 
-	@Value("${SFTPWORKINGDIR}")
+	@Value("${SFTPINBOUNDDIR}")
 	private String getSFTPInboundDirectory;
 
 	@Value("${SFTPPROCESSDIR}")
 	private String getSFTPProcessDirectory;
+	
+	@Value("${SFTPBACKUPDIR}")
+	private String getSFTPBackupDirectory;
+	
+	@Value("${SFTPEXCEPTIONDIR}")
+	private String getSFTPExceptionDirectory;
 
 	@Value("${LOCALPATH}")
 	private String getLocalPath;
@@ -138,17 +144,26 @@ public class CourseController {
 	}
 
 	@GetMapping(value = "/accessSFTPFile")
-	public boolean moveFileFromInbondToProcess() {
+	public String  moveFileFromInbondToProcess() {
 		boolean SFTPStatus = false;
+		Integer statusCount=null;
+		String response="";
 		try {
 			moveSFTPFiles = new MoveSFTPFiles(getSFTPHost, getSFTPUser, getSFTPPassword);
-			SFTPStatus = moveSFTPFiles.moveSFTFileInboundToProcess(getSFTPInboundDirectory.concat(getFileName),
-					getSFTPProcessDirectory, getLocalPath);
+			statusCount = moveSFTPFiles.downloadFileRemoteToLocal(getSFTPInboundDirectory.concat(getFileName), getLocalPath);
+			if (statusCount != null) 
+				SFTPStatus = moveSFTPFiles.uploadFileLocalToRemote(getLocalPath.concat(getFileName), getSFTPProcessDirectory);
+			if(SFTPStatus)
+				statusCount = moveSFTPFiles.downloadFileRemoteToLocal(getSFTPProcessDirectory.concat(getFileName), getLocalPath);
+			if (SFTPStatus && statusCount != null) 
+				response="Successfully moved file from Process To Local!!";
+			else
+				response="Fail to move file!!";
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			e.printStackTrace();
 		}
-		return SFTPStatus;
+		return response;
 	}
 
 	@GetMapping(value = "/loadContentAPI")
