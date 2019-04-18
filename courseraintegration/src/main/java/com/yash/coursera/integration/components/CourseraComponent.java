@@ -60,9 +60,10 @@ public class CourseraComponent {
 
 	
 	RestTemplate restTemplate = new RestTemplate();
-	HttpHeaders headers = new HttpHeaders();
+	
 
 	public JSONObject getAccessToken(String code, RestTemplate restTemplate) {
+		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add(GlobalConstants.CODE_KEY, code);
@@ -83,6 +84,7 @@ public class CourseraComponent {
 	}
 
 	public String getNewAccessToken(String refreshToken) {
+		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add(GlobalConstants.GRANT_TYPE_KEY, refreshTokenParamValue);
@@ -103,6 +105,7 @@ public class CourseraComponent {
 	}
 
 	public ResponseEntity<String> callProgramsAPI(Integer start, Integer limit, String accessToken) {
+		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + accessToken);
 		String queryParams = "?" + GlobalConstants.START + "=" + start + "&" + GlobalConstants.LIMIT + "=" + limit;
 
@@ -113,6 +116,7 @@ public class CourseraComponent {
 	}
 
 	public ResponseEntity<String> callContentsAPI(Integer start, Integer limit, String accessToken) {
+		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + accessToken);
 		String queryParams = "?" + GlobalConstants.START + "=" + start + "&" + GlobalConstants.LIMIT + "=" + limit;
 
@@ -123,6 +127,7 @@ public class CourseraComponent {
 	}
 
 	public ResponseEntity<ApiResponse> postOrDeleteInvitation(String programId, String accessToken, User user, HttpMethod requestMethod){
+		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + accessToken);
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		
