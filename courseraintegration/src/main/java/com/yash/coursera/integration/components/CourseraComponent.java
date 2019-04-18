@@ -1,5 +1,7 @@
 package com.yash.coursera.integration.components;
 
+import java.time.LocalTime;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -131,8 +133,13 @@ public class CourseraComponent {
 		}
 		
 		HttpEntity<User> entity = new HttpEntity<User>(user, headers);
+		
+		Long startTime = System.currentTimeMillis(); 
 		ResponseEntity<ApiResponse> response = restTemplate.exchange(url, requestMethod, entity, ApiResponse.class);
+		Long endTime = System.currentTimeMillis();
+		
 		System.out.println(response);
+		System.out.println("Total time to get response :  " + (endTime-startTime) + " milliseconds");
 		return response;
 	}
 
