@@ -21,7 +21,7 @@ import com.yash.coursera.integration.model.ApiResponse;
 import com.yash.coursera.integration.model.User;
 
 @Component
-public class CourseraComponent {
+public class CourseraTokenComponent {
 
 	@Value("${GET_PROGRAM_API}")
 	private String getProgramListApi;

@@ -19,16 +19,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.yash.coursera.integration.components.CourseraComponent;
+import com.yash.coursera.integration.components.CourseraTokenComponent;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.model.ApiResponse;
 import com.yash.coursera.integration.model.User;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CourseraComponentTest {
+public class CourseraTokenComponentTest {
 
 	@InjectMocks
-	CourseraComponent courseraComponent;
+	CourseraTokenComponent courseraComponent;
 
 	@Mock
 	FileOpUtils commonUtils;
