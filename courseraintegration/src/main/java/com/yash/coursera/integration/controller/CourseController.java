@@ -27,7 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.yash.coursera.integration.components.CourseraComponent;
+import com.jcraft.jsch.JSch;
+import com.yash.coursera.integration.components.CourseraTokenComponent;
 import com.yash.coursera.integration.components.SFTPComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.FileOpUtils;
@@ -82,10 +83,10 @@ public class CourseController {
 
 	@Value("${SFTPPROCESSDIR}")
 	private String getSFTPProcessDirectory;
-	
+
 	@Value("${SFTPBACKUPDIR}")
 	private String getSFTPBackupDirectory;
-	
+
 	@Value("${SFTPEXCEPTIONDIR}")
 	private String getSFTPExceptionDirectory;
 
@@ -104,7 +105,7 @@ public class CourseController {
 	BatchConfig batchConfig;
 
 	@Autowired
-	CourseraComponent courseraComponent;
+	CourseraTokenComponent courseraTokenComponent;
 
 	@Autowired
 	FileOpUtils commonUtils;
@@ -121,7 +122,7 @@ public class CourseController {
 		RestTemplate restTemplate = new RestTemplate();
 
 		if (code != null) {
-			JSONObject JsonObject = courseraComponent.getAccessToken(code, restTemplate);
+			JSONObject JsonObject = courseraTokenComponent.getAccessToken(code, restTemplate);
 			accessToken = (String) JsonObject.get(GlobalConstants.ACCESS_TOKEN_KEY);
 			refreshToken = (String) JsonObject.get(GlobalConstants.REFRESH_TOKEN_KEY);
 			if (accessToken != "" && refreshToken != "")
@@ -144,25 +145,20 @@ public class CourseController {
 	}
 
 	@GetMapping(value = "/accessSFTPFile")
-	public String  sftpFileTransfer() {
+	public String sftpFileTransfer() {
 		boolean SFTPStatus = false;
-		Integer statusCount=null;
-		String response="";
-		try {
-			sftpComponent = new SFTPComponent(getSFTPHost, getSFTPUser, getSFTPPassword);
-			statusCount = sftpComponent.downloadFileRemoteToLocal(getSFTPInboundDirectory.concat(getFileName), getLocalPath);
-			if (statusCount != null) 
-				SFTPStatus = sftpComponent.uploadFileLocalToRemote(getLocalPath.concat(getFileName), getSFTPProcessDirectory);
-			if(SFTPStatus)
-				statusCount = sftpComponent.downloadFileRemoteToLocal(getSFTPProcessDirectory.concat(getFileName), getLocalPath);
-			if (SFTPStatus && statusCount != null) 
-				response="Successfully moved file from Process To Local!!";
-			else
-				response="Fail to move file!!";
-		} catch (Exception e) {
-			LOGGER.error("SFTPFileTransfer [SFTP file transfer failure] :: "+ e.getMessage());
-			e.printStackTrace();
-		}
+		Integer statusCount = null;
+		String response = "";
+		sftpComponent.setJsch(new JSch());
+		statusCount = sftpComponent.downloadFileRemoteToLocal(getSFTPInboundDirectory.concat(getFileName),getLocalPath);
+		if (statusCount != null)
+			SFTPStatus = sftpComponent.uploadFileLocalToRemote(getLocalPath.concat(getFileName),getSFTPProcessDirectory);
+		if (SFTPStatus)
+			statusCount = sftpComponent.downloadFileRemoteToLocal(getSFTPProcessDirectory.concat(getFileName),getLocalPath);
+		if (SFTPStatus && statusCount != null)
+			response = "Successfully moved file from Process To Local!!";
+		else
+			response = "Fail to move file!!";
 		return response;
 	}
 

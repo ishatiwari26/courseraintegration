@@ -19,7 +19,7 @@ import com.yash.coursera.integration.batch.CustomDBWriter;
 import com.yash.coursera.integration.batch.InvitationWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
-import com.yash.coursera.integration.components.CourseraComponent;
+import com.yash.coursera.integration.components.CourseraTokenComponent;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.Elements;
@@ -35,7 +35,7 @@ public class BatchConfig {
 	private JobBuilderFactory jobBuilderFactory;
 
 	@Autowired
-	CourseraComponent courseraComponent;
+	CourseraTokenComponent courseraTokenComponent;
 	
 	@Autowired
 	ResponseReader reader;
@@ -111,7 +111,7 @@ public class BatchConfig {
 	}
 	
 	public String getNewToken(String refreshToken) {
-		return courseraComponent.getNewAccessToken(refreshToken);
+		return courseraTokenComponent.getNewAccessToken(refreshToken);
 	}
 
 }

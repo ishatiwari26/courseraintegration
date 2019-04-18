@@ -9,6 +9,7 @@ import java.io.OutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.jcraft.jsch.Channel;
@@ -16,15 +17,25 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.yash.coursera.integration.controller.CourseController;
 
 @Component
 public class SFTPComponent {
-	private String host;
-	private String user;
-	private String password;
+	
+	@Value("${SFTPHOST}")
+	private String getSFTPHost;
 
+	@Value("${SFTPUSER}")
+	private String getSFTPUser;
+
+	@Value("${SFTPPASS}")
+	private String getSFTPPassword;
+	
 	private JSch jsch;
+
+	public void setJsch(JSch jsch) {
+		this.jsch = jsch;
+	}
+
 	private Session session;
 	private Channel channel;
 	private ChannelSftp sftpChannel;
@@ -35,41 +46,11 @@ public class SFTPComponent {
 
 	}
 
-	public SFTPComponent(String host, String user, String password) {
-		this.host = host;
-		this.user = user;
-		this.password = password;
-	}
-
-	private void connect() {
-		try {
-			jsch = new JSch();
-			session = jsch.getSession(user, host);
-			session.setConfig("StrictHostKeyChecking", "no");
-			session.setPassword(password);
-			session.connect();
-
-			channel = session.openChannel("sftp");
-			channel.connect();
-			sftpChannel = (ChannelSftp) channel;
-
-		} catch (JSchException e) {
-			LOGGER.error("SFTP connection failure :: "+ e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
-	private void disconnect() {
-		sftpChannel.disconnect();
-		channel.disconnect();
-		session.disconnect();
-	}
-
 	public Integer downloadFileRemoteToLocal(String remoteDir, String localDir) {
 		Integer readCount = null;
 		byte[] buffer = new byte[1024];
 		BufferedInputStream bufferedInputStream;
-		connect();
+		connectToSFTP();
 		try {
 			String cdDir = remoteDir.substring(0, remoteDir.lastIndexOf("/") + 1);
 			sftpChannel.cd(cdDir);
@@ -93,14 +74,14 @@ public class SFTPComponent {
 			LOGGER.error("downoalRemoteToLocal [SFTP file transfer failure from remote to local] :: "+ e.getMessage());
 			e.printStackTrace();
 		}
-		disconnect();
+		disconnectFromSFTP();
 		return readCount;
 	}
 
 	public boolean uploadFileLocalToRemote(String localDir, String remoteDir) {
 		boolean isUploaded = false;
 		FileInputStream fileInputStream = null;
-		connect();
+		connectToSFTP();
 		try {
 			sftpChannel.cd(remoteDir);
 			File fileLocal = new File(localDir);
@@ -113,10 +94,31 @@ public class SFTPComponent {
 			LOGGER.error("uploadLocalToRemote [SFTP file transfer failure from local to remote] :: "+ e.getMessage());
 			e.printStackTrace();
 		}
-		disconnect();
+		disconnectFromSFTP();
 		return isUploaded;
 	}
+	private void connectToSFTP() {
+		try {			
+			session = jsch.getSession(getSFTPUser, getSFTPHost);
+			session.setConfig("StrictHostKeyChecking", "no");
+			session.setPassword(getSFTPPassword);
+			session.connect();
 
+			channel = session.openChannel("sftp");
+			channel.connect();
+			sftpChannel = (ChannelSftp) channel;
+
+		} catch (JSchException e) {
+			LOGGER.error("SFTP connection failure :: "+ e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	private void disconnectFromSFTP() {
+		sftpChannel.disconnect();
+		channel.disconnect();
+		session.disconnect();
+	}
 	/*public boolean moveSFTFileInboundToProcess(String strInboundFilePath, String strProcessFilePath,
 			String strLocalPath) {
 		boolean isMoved = false;

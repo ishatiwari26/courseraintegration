@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.yash.coursera.integration.components.CourseraComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.helper.FileOpUtils;

@@ -1,11 +1,6 @@
 package com.yash.coursera.integration;
 
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,7 +32,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.yash.coursera.integration.batch.CustomDBWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
-import com.yash.coursera.integration.components.CourseraComponent;
+import com.yash.coursera.integration.components.CourseraTokenComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 
@@ -48,7 +43,7 @@ public class BatchConfigTest {
 	BatchConfig batchConfig;
 	
 	@Mock
-	CourseraComponent courseraComponent;
+	CourseraTokenComponent courseraTokenComponent;
 	
 	@Mock
 	ResponseReader reader;
@@ -208,7 +203,7 @@ public class BatchConfigTest {
 	@Test
 	public void shouldGetNewToken() {
 		String token="testToken";
-		Mockito.when(courseraComponent.getNewAccessToken(Mockito.anyString())).thenReturn(token);
+		Mockito.when(courseraTokenComponent.getNewAccessToken(Mockito.anyString())).thenReturn(token);
 		batchConfig.getNewToken(Mockito.anyString());
 	}
 }

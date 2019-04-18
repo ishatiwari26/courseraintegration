@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
-import com.yash.coursera.integration.components.CourseraComponent;
+import com.yash.coursera.integration.components.CourseraTokenComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.helper.FileOpUtils;
@@ -34,7 +34,7 @@ public class InvitationWriter implements ItemWriter<User> {
 	FileOpUtils fileOpUtils;
 
 	@Autowired
-	private CourseraComponent courseraComponent;
+	private CourseraTokenComponent courseraTokenComponent;
 
 	private List<String> programIds;
 	private String accessToken;
@@ -67,7 +67,7 @@ public class InvitationWriter implements ItemWriter<User> {
 	}
 
 	private ApiResponse callInvitationAPI(String programId, User user, HttpMethod requestMethod) {
-		ResponseEntity<ApiResponse> response = courseraComponent.postOrDeleteInvitation(programId, accessToken, user, requestMethod);
+		ResponseEntity<ApiResponse> response = courseraTokenComponent.postOrDeleteInvitation(programId, accessToken, user, requestMethod);
 		return response.getBody();
 	}
 
