@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.components.CourseraComponent;
+import com.yash.coursera.integration.components.SFTPComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
-import com.yash.coursera.integration.helper.MoveSFTPFiles;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -110,7 +110,7 @@ public class CourseController {
 	FileOpUtils commonUtils;
 
 	@Autowired
-	MoveSFTPFiles moveSFTPFiles;
+	private SFTPComponent sftpComponent;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CourseController.class);
 
@@ -144,23 +144,23 @@ public class CourseController {
 	}
 
 	@GetMapping(value = "/accessSFTPFile")
-	public String  moveFileFromInbondToProcess() {
+	public String  sftpFileTransfer() {
 		boolean SFTPStatus = false;
 		Integer statusCount=null;
 		String response="";
 		try {
-			moveSFTPFiles = new MoveSFTPFiles(getSFTPHost, getSFTPUser, getSFTPPassword);
-			statusCount = moveSFTPFiles.downloadFileRemoteToLocal(getSFTPInboundDirectory.concat(getFileName), getLocalPath);
+			sftpComponent = new SFTPComponent(getSFTPHost, getSFTPUser, getSFTPPassword);
+			statusCount = sftpComponent.downloadFileRemoteToLocal(getSFTPInboundDirectory.concat(getFileName), getLocalPath);
 			if (statusCount != null) 
-				SFTPStatus = moveSFTPFiles.uploadFileLocalToRemote(getLocalPath.concat(getFileName), getSFTPProcessDirectory);
+				SFTPStatus = sftpComponent.uploadFileLocalToRemote(getLocalPath.concat(getFileName), getSFTPProcessDirectory);
 			if(SFTPStatus)
-				statusCount = moveSFTPFiles.downloadFileRemoteToLocal(getSFTPProcessDirectory.concat(getFileName), getLocalPath);
+				statusCount = sftpComponent.downloadFileRemoteToLocal(getSFTPProcessDirectory.concat(getFileName), getLocalPath);
 			if (SFTPStatus && statusCount != null) 
 				response="Successfully moved file from Process To Local!!";
 			else
 				response="Fail to move file!!";
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("SFTPFileTransfer [SFTP file transfer failure] :: "+ e.getMessage());
 			e.printStackTrace();
 		}
 		return response;

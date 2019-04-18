@@ -79,7 +79,6 @@ public class CourseraAPIDataDaoImpl extends JdbcDaoSupport implements CourseraAP
 
 				SFLmsMapper element = elements.get(i);
 				ps.setString(1, element.getCourseID());
-				System.out.println(" element.getContentID()>>>"+ element.getContentID());
 				ps.setString(2, element.getContentID());
 				ps.setString(3, element.getTitle().getValue());
 				ps.setString(4, element.getStatus());

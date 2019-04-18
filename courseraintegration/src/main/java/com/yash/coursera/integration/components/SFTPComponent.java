@@ -1,4 +1,4 @@
-package com.yash.coursera.integration.helper;
+package com.yash.coursera.integration.components;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.jcraft.jsch.Channel;
@@ -14,9 +16,10 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.yash.coursera.integration.controller.CourseController;
 
 @Component
-public class MoveSFTPFiles {
+public class SFTPComponent {
 	private String host;
 	private String user;
 	private String password;
@@ -25,12 +28,14 @@ public class MoveSFTPFiles {
 	private Session session;
 	private Channel channel;
 	private ChannelSftp sftpChannel;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(SFTPComponent.class);
 
-	public MoveSFTPFiles() {
+	public SFTPComponent() {
 
 	}
 
-	public MoveSFTPFiles(String host, String user, String password) {
+	public SFTPComponent(String host, String user, String password) {
 		this.host = host;
 		this.user = user;
 		this.password = password;
@@ -49,6 +54,7 @@ public class MoveSFTPFiles {
 			sftpChannel = (ChannelSftp) channel;
 
 		} catch (JSchException e) {
+			LOGGER.error("SFTP connection failure :: "+ e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -84,6 +90,7 @@ public class MoveSFTPFiles {
 			if (readCount < 0)
 				sftpChannel.rm(remoteDir);
 		} catch (Exception e) {
+			LOGGER.error("downoalRemoteToLocal [SFTP file transfer failure from remote to local] :: "+ e.getMessage());
 			e.printStackTrace();
 		}
 		disconnect();
@@ -103,6 +110,7 @@ public class MoveSFTPFiles {
 			if (fileLocal.delete())
 				isUploaded = true;
 		} catch (Exception e) {
+			LOGGER.error("uploadLocalToRemote [SFTP file transfer failure from local to remote] :: "+ e.getMessage());
 			e.printStackTrace();
 		}
 		disconnect();
