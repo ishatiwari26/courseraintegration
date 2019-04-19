@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -37,6 +38,7 @@ import com.yash.coursera.integration.components.SFTPComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.controller.CourseController;
 import com.yash.coursera.integration.helper.FileOpUtils;
+import com.yash.coursera.integration.helper.GlobalConstants;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(CourseController.class)
@@ -137,7 +139,10 @@ public class CourseControllerTests {
 		Mockito.mock(HashMap.class);
 		Job job = new SimpleJob();
 		when(config.processJob()).thenReturn(job);
-
+		Map map = new HashMap<String,String>();
+		map.put(GlobalConstants.ACCESS_TOKEN_KEY,"test");
+		map.put(GlobalConstants.REFRESH_TOKEN_KEY, "test");
+		when(fileOpUtil.readAccessToken()).thenReturn(map);
 		when(jobLauncher.run(Mockito.any(Job.class), Mockito.any(JobParameters.class))).thenReturn(jobExecution);
 
 		mockMvc.perform(get("/loadContentAPI").contentType("application/json")).andExpect(status().isOk());
@@ -178,7 +183,10 @@ public class CourseControllerTests {
 		Mockito.mock(HashMap.class);
 		Job job = new SimpleJob();
 		when(config.processJob()).thenReturn(job);
-
+		Map map = new HashMap<String,String>();
+		map.put(GlobalConstants.ACCESS_TOKEN_KEY,"test");
+		map.put(GlobalConstants.REFRESH_TOKEN_KEY, "test");
+		when(fileOpUtil.readAccessToken()).thenReturn(map);
 		when(jobLauncher.run(Mockito.any(Job.class), Mockito.any(JobParameters.class))).thenReturn(jobExecution);
 
 		mockMvc.perform(get("/loadProgramAPI").contentType("application/json")).andExpect(status().isOk());
@@ -194,7 +202,10 @@ public class CourseControllerTests {
 		Mockito.mock(HashMap.class);
 		Job job = new SimpleJob();
 		when(config.processJob()).thenReturn(job);
-
+		Map map = new HashMap<String,String>();
+		map.put(GlobalConstants.ACCESS_TOKEN_KEY,"test");
+		map.put(GlobalConstants.REFRESH_TOKEN_KEY, "test");
+		when(fileOpUtil.readAccessToken()).thenReturn(map);
 		when(jobLauncher.run(Mockito.any(Job.class), Mockito.any(JobParameters.class))).thenReturn(jobExecution);
 
 		mockMvc.perform(get("/loadStatusAPI").contentType("application/json")).andExpect(status().isOk());
@@ -210,7 +221,10 @@ public class CourseControllerTests {
 		Mockito.mock(HashMap.class);
 		Job job = new SimpleJob();
 		Mockito.when(config.processInviteJob()).thenReturn(job);
-
+		Map map = new HashMap<String,String>();
+		map.put(GlobalConstants.ACCESS_TOKEN_KEY,"test");
+		map.put(GlobalConstants.REFRESH_TOKEN_KEY, "test");
+		when(fileOpUtil.readAccessToken()).thenReturn(map);
 		Mockito.when(jobLauncher.run(Mockito.any(Job.class), Mockito.any(JobParameters.class)))
 				.thenReturn(jobExecution);
 
