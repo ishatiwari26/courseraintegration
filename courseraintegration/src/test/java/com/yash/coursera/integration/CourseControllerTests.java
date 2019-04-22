@@ -139,8 +139,8 @@ public class CourseControllerTests {
 		Mockito.mock(HashMap.class);
 		Job job = new SimpleJob();
 		when(config.processJob()).thenReturn(job);
-		Map map = new HashMap<String,String>();
-		map.put(GlobalConstants.ACCESS_TOKEN_KEY,"test");
+		Map map = new HashMap<String, String>();
+		map.put(GlobalConstants.ACCESS_TOKEN_KEY, "test");
 		map.put(GlobalConstants.REFRESH_TOKEN_KEY, "test");
 		when(fileOpUtil.readAccessToken()).thenReturn(map);
 		when(jobLauncher.run(Mockito.any(Job.class), Mockito.any(JobParameters.class))).thenReturn(jobExecution);
@@ -183,8 +183,8 @@ public class CourseControllerTests {
 		Mockito.mock(HashMap.class);
 		Job job = new SimpleJob();
 		when(config.processJob()).thenReturn(job);
-		Map map = new HashMap<String,String>();
-		map.put(GlobalConstants.ACCESS_TOKEN_KEY,"test");
+		Map map = new HashMap<String, String>();
+		map.put(GlobalConstants.ACCESS_TOKEN_KEY, "test");
 		map.put(GlobalConstants.REFRESH_TOKEN_KEY, "test");
 		when(fileOpUtil.readAccessToken()).thenReturn(map);
 		when(jobLauncher.run(Mockito.any(Job.class), Mockito.any(JobParameters.class))).thenReturn(jobExecution);
@@ -202,8 +202,8 @@ public class CourseControllerTests {
 		Mockito.mock(HashMap.class);
 		Job job = new SimpleJob();
 		when(config.processJob()).thenReturn(job);
-		Map map = new HashMap<String,String>();
-		map.put(GlobalConstants.ACCESS_TOKEN_KEY,"test");
+		Map map = new HashMap<String, String>();
+		map.put(GlobalConstants.ACCESS_TOKEN_KEY, "test");
 		map.put(GlobalConstants.REFRESH_TOKEN_KEY, "test");
 		when(fileOpUtil.readAccessToken()).thenReturn(map);
 		when(jobLauncher.run(Mockito.any(Job.class), Mockito.any(JobParameters.class))).thenReturn(jobExecution);
@@ -214,6 +214,8 @@ public class CourseControllerTests {
 
 	@Test
 	public void shouldLoadUserInvitationAPI() throws Exception {
+		when(sftpComponent.moveInboundToLocalViaProcess(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString())).thenReturn(true);
 		Mockito.mock(JobParameter.class);
 		Mockito.mock(JobParameters.class);
 		JobExecution jobExecution = new JobExecution(1L);
@@ -221,43 +223,27 @@ public class CourseControllerTests {
 		Mockito.mock(HashMap.class);
 		Job job = new SimpleJob();
 		Mockito.when(config.processInviteJob()).thenReturn(job);
-		Map map = new HashMap<String,String>();
-		map.put(GlobalConstants.ACCESS_TOKEN_KEY,"test");
+		Map map = new HashMap<String, String>();
+		map.put(GlobalConstants.ACCESS_TOKEN_KEY, "test");
 		map.put(GlobalConstants.REFRESH_TOKEN_KEY, "test");
 		when(fileOpUtil.readAccessToken()).thenReturn(map);
 		Mockito.when(jobLauncher.run(Mockito.any(Job.class), Mockito.any(JobParameters.class)))
 				.thenReturn(jobExecution);
-
+		when(sftpComponent.uploadFileLocalToRemote(Mockito.anyString(),Mockito.anyString())).thenReturn(true);
 		mockMvc.perform(get("/loadInvitationAPI").contentType("application/json")).andExpect(status().isOk());
 		assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
 	}
-
+	
 	@Test
-	public void shouldTransferSFTPFile() throws Exception {
-		when(sftpComponent.downloadFileRemoteToLocal(Mockito.anyString(), Mockito.anyString())).thenReturn(-1);
-		when(sftpComponent.uploadFileLocalToRemote(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
-		mockMvc.perform(get("/accessSFTPFile").contentType("application/json")).andExpect(status().isOk());
+	public void shouldLoadUserInvitationAPI_WhenSFTPFalse() throws Exception {
+		when(sftpComponent.moveInboundToLocalViaProcess(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString())).thenReturn(false);
+		JobExecution jobExecution = new JobExecution(1L);
+		when(sftpComponent.uploadFileLocalToRemote(Mockito.anyString(),Mockito.anyString())).thenReturn(true);
+		mockMvc.perform(get("/loadInvitationAPI").contentType("application/json")).andExpect(status().is(404));
+		assertEquals(BatchStatus.STARTING, jobExecution.getStatus());
 	}
-
-	@Test
-	public void shouldFailTransferSFTPFile_WhenInboundToLocalReturnNull() throws Exception {
-		when(sftpComponent.downloadFileRemoteToLocal(Mockito.anyString(), Mockito.anyString())).thenReturn(null);
-		mockMvc.perform(get("/accessSFTPFile").contentType("application/json")).andExpect(status().isOk());
-	}
-
-	@Test
-	public void shouldFailTransferSFTPFile_WhenLocalToProcessReturnFalse() throws Exception {
-		when(sftpComponent.downloadFileRemoteToLocal(Mockito.anyString(), Mockito.anyString())).thenReturn(-1);
-		when(sftpComponent.uploadFileLocalToRemote(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-		mockMvc.perform(get("/accessSFTPFile").contentType("application/json")).andExpect(status().isOk());
-	}
-
-	@Test
-	public void shouldFailTransferSFTPFile_WhenSFTPStatus_False_statusCount_Null() throws Exception {
-		when(sftpComponent.downloadFileRemoteToLocal(Mockito.anyString(), Mockito.anyString())).thenReturn(null);
-		when(sftpComponent.uploadFileLocalToRemote(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
-		mockMvc.perform(get("/accessSFTPFile").contentType("application/json")).andExpect(status().isOk());
-	}
+	
 
 	/*
 	 * @Test public void shouldUnAutjorixedWhenPostUserWhoNotInvided() throws
