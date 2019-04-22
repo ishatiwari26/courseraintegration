@@ -131,11 +131,6 @@ public class CourseController {
 				commonUtils.writeToFile(new String[] { GlobalConstants.ACCESS_TOKEN_KEY + "=" + accessToken,
 						GlobalConstants.REFRESH_TOKEN_KEY + "=" + refreshToken });
 		}
-		LOGGER.trace("callback needed more information - {}", refreshToken);
-		LOGGER.debug("callback needed to debug - {}", refreshToken);
-		LOGGER.info("callback took input - {}", refreshToken);
-		LOGGER.warn("callback needed to warn - {}", refreshToken);
-		LOGGER.error("callback encountered an error with value - {}", refreshToken);
 		return "Tokens Generated: <br>AccessToken: " + accessToken + "<br> " + " RefreshToken: " + refreshToken;
 	}
 
@@ -146,27 +141,6 @@ public class CourseController {
 
 	}
 
-	@GetMapping(value = "/accessSFTPFile")
-	public String sftpFileTransfer() {
-		boolean SFTPStatus = false;
-		Integer statusCount = null;
-		String response = "";
-		sftpComponent.setJsch(new JSch());
-		statusCount = sftpComponent.downloadFileRemoteToLocal(getSFTPInboundDirectory.concat(getFileName),
-				getLocalPath);
-		if (statusCount != null)
-			SFTPStatus = sftpComponent.uploadFileLocalToRemote(getLocalPath.concat(getFileName),
-					getSFTPProcessDirectory);
-		if (SFTPStatus)
-			statusCount = sftpComponent.downloadFileRemoteToLocal(getSFTPProcessDirectory.concat(getFileName),
-					getLocalPath);
-		if (SFTPStatus && statusCount != null)
-			response = "Successfully moved file from Process To Local!!";
-		else
-			response = "Fail to move file!!";
-
-		return response;
-	}
 
 	@GetMapping(value = "/loadContentAPI")
 	public ResponseEntity<String> loadContentAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
@@ -189,7 +163,7 @@ public class CourseController {
 			ex = jobLauncher.run(batchConfig.processJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Exception while loading content API [loadContentAPI] :: " + e.getMessage());
 			e.printStackTrace();
 		}
 		if ((ex.getStatus()).equals(BatchStatus.COMPLETED)) {
@@ -223,7 +197,7 @@ public class CourseController {
 			ex = jobLauncher.run(batchConfig.processJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Exception while loading program API [loadProgramAPI] :: " + e.getMessage());
 			e.printStackTrace();
 		}
 		if ((ex.getStatus()).equals(BatchStatus.COMPLETED)) {
@@ -255,7 +229,7 @@ public class CourseController {
 			ex = jobLauncher.run(batchConfig.processJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Exception while loading status API [loadStatusAPI] :: " + e.getMessage());
 			e.printStackTrace();
 		}
 		if ((ex.getStatus()).equals(BatchStatus.COMPLETED)) {
@@ -271,32 +245,41 @@ public class CourseController {
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		ResponseEntity<String> response = null;
 		JobExecution ex = null;
+		boolean SFTPStatus = false;
+		sftpComponent.setJsch(new JSch());
+		SFTPStatus = sftpComponent.moveInboundToLocalViaProcess(getSFTPInboundDirectory, getSFTPProcessDirectory,
+				getLocalPath, getFileName);
+		if (SFTPStatus) {
+			if (isNotAuthorized()) {
+				return new ResponseEntity("Authorize client  and generate token by calling /generateToken API",
+						HttpStatus.UNAUTHORIZED);
+			}
+			Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
+			confMap.put("time", new JobParameter(System.currentTimeMillis()));
+			confMap.put("jobName", new JobParameter("loadInvitationAPI"));
+			confMap.put("fileName", new JobParameter(invitationFileName));
+			confMap.put("apiUrl", new JobParameter(getInvitationApi));
+			JobParameters jobParameters = new JobParameters(confMap);
 
-		if (isNotAuthorized()) {
-			return new ResponseEntity("Authorize client  and generate token by calling /generateToken API",
-					HttpStatus.UNAUTHORIZED);
+			try {
+				ex = jobLauncher.run(batchConfig.processInviteJob(), jobParameters);
+			} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
+					| JobParametersInvalidException e) {
+				LOGGER.error("Exception while loading invitation API [loadInvitationAPI] :: " + e.getMessage());
+				e.printStackTrace();
+			}
 
-		}
-
-		Map<String, JobParameter> confMap = new HashMap<String, JobParameter>();
-		confMap.put("time", new JobParameter(System.currentTimeMillis()));
-		confMap.put("jobName", new JobParameter("loadInvitationAPI"));
-		confMap.put("fileName", new JobParameter(invitationFileName));
-		confMap.put("apiUrl", new JobParameter(getInvitationApi));
-		JobParameters jobParameters = new JobParameters(confMap);
-
-		try {
-			ex = jobLauncher.run(batchConfig.processInviteJob(), jobParameters);
-		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
-				| JobParametersInvalidException e) {
-			LOGGER.error(e.getMessage());
-			e.printStackTrace();
-		}
-
-		if ((ex.getStatus()).equals(BatchStatus.COMPLETED)) {
-			response = new ResponseEntity("Job Executed Successfully", HttpStatus.OK);
+			if ((ex.getStatus()).equals(BatchStatus.COMPLETED)) {
+				SFTPStatus = sftpComponent.uploadFileLocalToRemote(getLocalPath.concat(getFileName),
+						getSFTPBackupDirectory);
+				response = new ResponseEntity("Job Executed Successfully", HttpStatus.OK);
+			} else {
+				SFTPStatus = sftpComponent.uploadFileLocalToRemote(getLocalPath.concat(getFileName),
+						getSFTPExceptionDirectory);
+				response = new ResponseEntity("Job Failed", HttpStatus.SEE_OTHER);
+			}
 		} else {
-			response = new ResponseEntity("Job Failed", HttpStatus.SEE_OTHER);
+			response = new ResponseEntity("Fail to move file!!", HttpStatus.NOT_FOUND);
 		}
 		return response;
 	}
@@ -324,27 +307,28 @@ public class CourseController {
 	 * "The resource you were trying to reach is not found") })
 	 * 
 	 * @RequestMapping(value = "/invitation/{programId}", method =
-	 * RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes =
-	 * MediaType.APPLICATION_JSON_VALUE)
+	 * RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes
+	 * = MediaType.APPLICATION_JSON_VALUE)
 	 * 
 	 * @ResponseBody public ResponseEntity<String>
 	 * getInviteList(@PathVariable("programId") String programId,
 	 * 
-	 * @RequestBody User userInvitation, HttpServletRequest req, HttpServletResponse
-	 * res) { ResponseEntity<String> response = null; Map<String, String> tokensMap
-	 * = FileOpUtils.readAccessToken(); try {
+	 * @RequestBody User userInvitation, HttpServletRequest req,
+	 * HttpServletResponse res) { ResponseEntity<String> response = null;
+	 * Map<String, String> tokensMap = FileOpUtils.readAccessToken(); try {
 	 * 
-	 * if (tokensMap.get("access_token") == null || tokensMap.get("access_token") ==
-	 * "") { response = new ResponseEntity<>
+	 * if (tokensMap.get("access_token") == null ||
+	 * tokensMap.get("access_token") == "") { response = new ResponseEntity<>
 	 * ("Authorize client and generate token by calling /generateToken API",
 	 * HttpStatus.UNAUTHORIZED); } else { response =
-	 * courseraComponent.postInvitation(programId, tokensMap.get("access_token"),
-	 * userInvitation); }
+	 * courseraComponent.postInvitation(programId,
+	 * tokensMap.get("access_token"), userInvitation); }
 	 * 
 	 * } catch (RestClientException e) { try { accessToken =
-	 * courseraComponent.getNewAccessToken(tokensMap.get("refresh_token")); response
-	 * = courseraComponent.postInvitation(programId, accessToken, userInvitation); }
-	 * catch (RestClientException ex) { response = new ResponseEntity<>
+	 * courseraComponent.getNewAccessToken(tokensMap.get("refresh_token"));
+	 * response = courseraComponent.postInvitation(programId, accessToken,
+	 * userInvitation); } catch (RestClientException ex) { response = new
+	 * ResponseEntity<>
 	 * ("Authorize client  and generate token by calling /generateToken API",
 	 * HttpStatus.UNAUTHORIZED); } } return response; }
 	 */

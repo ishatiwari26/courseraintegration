@@ -48,7 +48,7 @@ public class SFTPComponent {
 
 	}
 
-	public Integer downloadFileRemoteToLocal(String remoteDir, String localDir)  {
+	public Integer downloadFileRemoteToLocal(String remoteDir, String localDir) {
 		Integer readCount = null;
 		byte[] buffer = new byte[1024];
 		BufferedInputStream bufferedInputStream;
@@ -63,7 +63,7 @@ public class SFTPComponent {
 				directory.mkdir();
 			}
 			File newFile = new File(localDir + "/" + fileRemote.getName());
-			
+
 			OutputStream outPutStream = new FileOutputStream(newFile);
 			BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outPutStream);
 			while ((readCount = bufferedInputStream.read(buffer)) > 0) {
@@ -73,7 +73,7 @@ public class SFTPComponent {
 			bufferedOutputStream.close();
 			if (readCount < 0)
 				sftpChannel.rm(remoteDir);
-		} catch (IOException |  SftpException e) {
+		} catch (IOException | SftpException e) {
 			LOGGER.error("downoalRemoteToLocal [SFTP file transfer failure from remote to local] :: " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -93,7 +93,7 @@ public class SFTPComponent {
 			fileInputStream.close();
 			if (fileLocal.delete())
 				isUploaded = true;
-		} catch (IOException |  SftpException e) {
+		} catch (IOException | SftpException e) {
 			LOGGER.error("uploadLocalToRemote [SFTP file transfer failure from local to remote] :: " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -120,5 +120,19 @@ public class SFTPComponent {
 	private void disconnectFromSFTP() {
 		sftpChannel.disconnect();
 		session.disconnect();
+	}
+
+	public boolean moveInboundToLocalViaProcess(String remoteInboundDir, String remoteProcessDir, String localDir,
+			String fileName) {
+		boolean isMoved = false;
+		if (downloadFileRemoteToLocal(remoteInboundDir.concat(fileName), localDir) < 0) {
+			if (uploadFileLocalToRemote(localDir.concat(fileName), remoteProcessDir)) {
+				if (downloadFileRemoteToLocal(remoteProcessDir.concat(fileName), localDir) < 0) {
+					isMoved = true;
+				}
+			}
+		}
+
+		return isMoved;
 	}
 }
