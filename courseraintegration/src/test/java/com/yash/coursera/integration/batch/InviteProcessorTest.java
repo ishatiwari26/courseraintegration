@@ -1,37 +1,7 @@
 package com.yash.coursera.integration.batch;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.HttpClientErrorException;
-
-import com.yash.coursera.integration.config.BatchConfig;
-import com.yash.coursera.integration.dao.CourseraAPIDataDao;
-import com.yash.coursera.integration.helper.FileOpUtils;
-import com.yash.coursera.integration.helper.GlobalConstants;
-import com.yash.coursera.integration.model.ApiResponse;
-import com.yash.coursera.integration.model.Element;
-import com.yash.coursera.integration.model.Elements;
-import com.yash.coursera.integration.model.User;
 
 @RunWith(SpringRunner.class)
 public class InviteProcessorTest {
