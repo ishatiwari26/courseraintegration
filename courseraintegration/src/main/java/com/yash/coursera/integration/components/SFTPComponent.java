@@ -22,13 +22,13 @@ import com.jcraft.jsch.SftpException;
 @Component
 public class SFTPComponent {
 
-	@Value("${SFTPHOST}")
+	@Value("${sftp.host}")
 	private String getSFTPHost;
 
-	@Value("${SFTPUSER}")
+	@Value("${sftp.user}")
 	private String getSFTPUser;
 
-	@Value("${SFTPPASS}")
+	@Value("${sftp.password}")
 	private String getSFTPPassword;
 
 	private JSch jsch;

@@ -41,61 +41,61 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 public class CourseController {
 
-	@Value("${CLIENT_ID}")
+	@Value("${client.id}")
 	private String clientId;
 
-	@Value("${GET_CODE_URI}")
+	@Value("${auth.code.uri}")
 	private String getCodeUri;
 
-	@Value("${PROGRAM_OUTPUT_FILE}")
+	@Value("${program.output.file}")
 	private String programFileName;
 
-	@Value("${CONTENT_OUTPUT_FILE}")
+	@Value("${content.output.file}")
 	private String contentFileName;
 
-	@Value("${STATUS_OUTPUT_FILE}")
+	@Value("${status.output.file}")
 	private String statusFileName;
 
-	@Value("${GET_PROGRAM_API}")
+	@Value("${program.api}")
 	private String getProgramListApi;
 
-	@Value("${GET_CONTENTS_API}")
+	@Value("${content.api}")
 	private String getContentsApi;
 
-	@Value("${GET_STATUS_API}")
+	@Value("${status.api}")
 	private String getStatusApi;
 
-	@Value("${INVITATION_OUTPUT_FILE}")
+	@Value("${invitation.output.file}")
 	private String invitationFileName;
 
-	@Value("${GET_INVITATION_API}")
+	@Value("${invitation.api}")
 	private String getInvitationApi;
 
-	@Value("${SFTPHOST}")
+	@Value("${sftp.host}")
 	private String getSFTPHost;
 
-	@Value("${SFTPUSER}")
+	@Value("${sftp.user}")
 	private String getSFTPUser;
 
-	@Value("${SFTPPASS}")
+	@Value("${sftp.password}")
 	private String getSFTPPassword;
 
-	@Value("${SFTPINBOUNDDIR}")
+	@Value("${sftp.inbound.dir}")
 	private String getSFTPInboundDirectory;
 
-	@Value("${SFTPPROCESSDIR}")
+	@Value("${sftp.process.dir}")
 	private String getSFTPProcessDirectory;
 
-	@Value("${SFTPBACKUPDIR}")
+	@Value("${sftp.backup.dir}")
 	private String getSFTPBackupDirectory;
 
-	@Value("${SFTPEXCEPTIONDIR}")
+	@Value("${sftp.exception.dir}")
 	private String getSFTPExceptionDirectory;
 
-	@Value("${LOCALPATH}")
+	@Value("${local.user.file.dir.path}")
 	private String getLocalPath;
 
-	@Value("${FILE_NAME}")
+	@Value("${user.file.name}")
 	private String getFileName;
 
 	String accessToken, refreshToken;

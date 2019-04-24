@@ -15,10 +15,10 @@ import com.yash.coursera.integration.model.User;
 @Configuration
 public class InvitationReader {
 
-	@Value("${LOCALPATH}")
+	@Value("${local.user.file.dir.path}")
 	private String localPath;
 
-	@Value("${FILE_NAME}")
+	@Value("${user.file.name}")
 	private String fileName;
 
 	@Bean

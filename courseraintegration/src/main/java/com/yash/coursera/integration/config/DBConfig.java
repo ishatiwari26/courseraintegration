@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Primary;
 import com.yash.coursera.integration.batch.CustomDBWriter;
 import com.yash.coursera.integration.batch.ResponseProcessor;
 import com.yash.coursera.integration.batch.ResponseReader;
-import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.Elements;
 import com.yash.coursera.integration.model.SFLmsMapper;
 

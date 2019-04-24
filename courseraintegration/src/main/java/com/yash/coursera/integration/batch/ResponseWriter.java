@@ -102,7 +102,6 @@ public class ResponseWriter implements ItemWriter<List<SFLmsMapper>> {
 		System.out.println("Calling beforeStep");
 		jobExecution = stepExecution.getJobExecution();
 		fileName = jobExecution.getJobParameters().getString("fileName");
-		String dateTime = DateFormatUtils.format(Calendar.getInstance(), "yyyyMMdd_HHmmss");
 		outputFilename = fileName;
 
 		workbook = new SXSSFWorkbook(100);
@@ -159,11 +158,6 @@ public class ResponseWriter implements ItemWriter<List<SFLmsMapper>> {
 		cell.setCellValue(val);
 	}
 
-	private void createNumericCell(Row row, Double val, int col) {
-		Cell cell = row.createCell(col);
-		cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-		cell.setCellValue(val);
-	}
 
 	public String getFileName() {
 		return fileName;

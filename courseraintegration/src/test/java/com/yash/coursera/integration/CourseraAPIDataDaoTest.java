@@ -1,6 +1,5 @@
 package com.yash.coursera.integration;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.sql.CallableStatement;

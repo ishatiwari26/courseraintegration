@@ -1,12 +1,11 @@
 package com.yash.coursera.integration.batch;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,12 +22,10 @@ import org.springframework.web.client.RestTemplate;
 
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.FileOpUtils;
-import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.Element;
 import com.yash.coursera.integration.model.Elements;
 import com.yash.coursera.integration.model.Instructor;
 import com.yash.coursera.integration.model.Program;
-import com.yash.coursera.integration.model.SFLmsMapper;
 
 @RunWith(SpringRunner.class)
 public class ResponseProcessorTest {

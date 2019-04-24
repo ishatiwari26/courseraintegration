@@ -22,7 +22,6 @@ import org.springframework.web.client.RestTemplate;
 import com.yash.coursera.integration.components.CourseraTokenComponent;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.model.ApiResponse;
-import com.yash.coursera.integration.model.User;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CourseraTokenComponentTest {

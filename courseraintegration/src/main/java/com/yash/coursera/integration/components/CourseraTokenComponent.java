@@ -21,34 +21,34 @@ import com.yash.coursera.integration.model.User;
 @Component
 public class CourseraTokenComponent {
 
-	@Value("${GET_PROGRAM_API}")
+	@Value("${program.api}")
 	private String getProgramListApi;
 
-	@Value("${GET_CONTENTS_API}")
+	@Value("${content.api}")
 	private String getContentsApi;
 
-	@Value("${REFRESH_TOKEN}")
+	@Value("${refresh.token}")
 	private String refreshTokenParamValue;
 
-	@Value("${ACCESS_TYPE}")
+	@Value("${auth.access.type}")
 	private String accessTypeParamValue;
 
-	@Value("${CLIENT_SECRET}")
+	@Value("${client.secret}")
 	private String clientSecret;
 
-	@Value("${CLIENT_ID}")
+	@Value("${client.id}")
 	private String clientId;
 
-	@Value("${CALLBACK_URI}")
+	@Value("${callback.uri}")
 	private String callBackUri;
 
-	@Value("${AUTHORIZATION_CODE}")
+	@Value("${authorization.code}")
 	private String authCodeParamValue;
 
-	@Value("${AUTH_TOKEN_URI}")
+	@Value("${auth.token.uri}")
 	private String getAuthTokenUri;
 
-	@Value("${GET_INVITATION_API}")
+	@Value("${invitation.api}")
 	private String inviteApiUrl;
 
 	private String accessToken, refreshToken;
