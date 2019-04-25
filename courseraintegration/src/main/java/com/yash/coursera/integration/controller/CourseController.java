@@ -1,5 +1,6 @@
 package com.yash.coursera.integration.controller;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,9 +33,11 @@ import org.springframework.web.client.RestTemplate;
 import com.jcraft.jsch.JSch;
 import com.yash.coursera.integration.components.CourseraTokenComponent;
 import com.yash.coursera.integration.components.SFTPComponent;
+import com.yash.coursera.integration.components.TLSEmailComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
+import com.yash.coursera.integration.model.EmailContents;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -114,6 +117,9 @@ public class CourseController {
 
 	@Autowired
 	private SFTPComponent sftpComponent;
+	
+	@Autowired
+	private TLSEmailComponent tlsEmailComponent;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CourseController.class);
 
@@ -140,7 +146,6 @@ public class CourseController {
 		res.sendRedirect(getCodeUri + clientId);
 
 	}
-
 
 	@GetMapping(value = "/loadContentAPI")
 	public ResponseEntity<String> loadContentAPI() throws JobExecutionAlreadyRunningException, JobRestartException,
@@ -275,12 +280,36 @@ public class CourseController {
 				response = new ResponseEntity("Job Executed Successfully", HttpStatus.OK);
 			} else {
 				SFTPStatus = sftpComponent.uploadFileLocalToRemote(getLocalPath.concat(getFileName),
-						getSFTPExceptionDirectory,true);
+						getSFTPExceptionDirectory, true);
 				response = new ResponseEntity("Job Failed", HttpStatus.SEE_OTHER);
 			}
 		} else {
 			response = new ResponseEntity("Fail to move file!!", HttpStatus.NOT_FOUND);
 		}
+		return response;
+	}
+
+	@GetMapping(value = "/sendEmailAPI")
+	public ResponseEntity<String> sendEmailWhileInviteFailed() {
+		ResponseEntity<String> response = null;
+		/* ######################### It will come from InvitationAPI ######################### */
+		EmailContents emailContent = new EmailContents();
+		long yourmilliseconds = System.currentTimeMillis();
+		Date resultdate = new Date(yourmilliseconds);
+		emailContent.setMailSubject("SFTP User Invitation Details");
+		emailContent.setCurrentDate(resultdate);
+		emailContent.setTotalInvitationCount(100);
+		emailContent.setSuccessInvitationCount(98);
+		emailContent.setFailedInvitationCount(2);
+
+		Map<String, String> userwitherrormap = new HashMap<>();
+		userwitherrormap.put("ref12300", "INVITATION ALREADY EXIST");
+		userwitherrormap.put("ref12400", "INVITATION ALREADY EXIST");
+		/* ######################### END #########################*/
+		if (tlsEmailComponent.sendEmailForInviteAPIFailure(emailContent, userwitherrormap))
+			response = new ResponseEntity("Successfully Send Mail To Admin!!", HttpStatus.OK);
+		else
+			response = new ResponseEntity("Fail Sending Email To Admin!!", HttpStatus.NOT_FOUND);
 		return response;
 	}
 
