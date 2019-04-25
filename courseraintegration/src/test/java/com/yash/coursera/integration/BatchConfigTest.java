@@ -138,19 +138,6 @@ public class BatchConfigTest {
 		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
 		Assert.assertEquals(taskletStep,batchConfig.getStep());
 	}
-	/*@SuppressWarnings("unchecked")
-	@Test
-	public void shouldThorwException_WhenGettingJobSteps() {
-//		exception.expect(MalformedURLException.class);
-		Mockito.when(stepBuilderFactory.get(Mockito.anyString())).thenReturn(stepBuilder);
-		Mockito.when(stepBuilder.allowStartIfComplete(false)).thenReturn(stepBuilder);
-		Mockito.when(stepBuilder.chunk(Mockito.anyInt())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.reader(Mockito.any())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.processor(Mockito.any(ItemProcessor.class))).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.writer(Mockito.any())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
-		batchConfig.getStep();
-	}*/
 	
 	@Test
 	public void shouldprocessInviteJob() {
@@ -158,7 +145,6 @@ public class BatchConfigTest {
 		Mockito.when(stepBuilder.allowStartIfComplete(false)).thenReturn(stepBuilder);
 		Mockito.when(stepBuilder.chunk(Mockito.anyInt())).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.reader(itemReader)).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.processor(itemProcessor)).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.writer(itemWriter)).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
 		
@@ -176,30 +162,11 @@ public class BatchConfigTest {
 		Mockito.when(stepBuilder.allowStartIfComplete(false)).thenReturn(stepBuilder);
 		Mockito.when(stepBuilder.chunk(Mockito.anyInt())).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.reader(itemReader)).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.processor(itemProcessor)).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.writer(itemWriter)).thenReturn(simpleStepBuilder);
 		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
 		Assert.assertEquals(taskletStep,batchConfig.inviteStep());
 	}
-	/*@Test
-	public void shouldThorwException_WhenSendInviteStep() {
-//		exception.expect(MalformedURLException.class);
-		Mockito.when(stepBuilderFactory.get(Mockito.anyString())).thenReturn(stepBuilder);
-		Mockito.when(stepBuilder.allowStartIfComplete(false)).thenReturn(stepBuilder);
-		Mockito.when(stepBuilder.chunk(Mockito.anyInt())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.reader(Mockito.any())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.processor(itemProcessor)).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.writer(Mockito.any())).thenReturn(simpleStepBuilder);
-		Mockito.when(simpleStepBuilder.build()).thenReturn(taskletStep);
-		batchConfig.sendInviteStep();
-	}*/
-	/*@Test
-	public void shouldThorwException_WhenSendInviteStep() throws MalformedURLException, IOException {
-//		URLConnection connection=new URL("http://bit.ly/15sYPA7").openConnection();
-		reader.setJobConfigurer(batchConfig);
-		reader.setLimitCountPerRead(10000);
-		
-	}*/
+
 	@Test
 	public void shouldGetNewToken() {
 		String token="testToken";

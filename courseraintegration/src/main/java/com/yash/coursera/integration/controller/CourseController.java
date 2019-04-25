@@ -248,7 +248,7 @@ public class CourseController {
 		boolean SFTPStatus = false;
 		sftpComponent.setJsch(new JSch());
 		SFTPStatus = sftpComponent.moveInboundToLocalViaProcess(getSFTPInboundDirectory, getSFTPProcessDirectory,
-				getLocalPath, getFileName);
+				getLocalPath, getFileName, false);
 		if (SFTPStatus) {
 			if (isNotAuthorized()) {
 				return new ResponseEntity("Authorize client  and generate token by calling /generateToken API",
@@ -271,11 +271,11 @@ public class CourseController {
 
 			if ((ex.getStatus()).equals(BatchStatus.COMPLETED)) {
 				SFTPStatus = sftpComponent.uploadFileLocalToRemote(getLocalPath.concat(getFileName),
-						getSFTPBackupDirectory);
+						getSFTPBackupDirectory, true);
 				response = new ResponseEntity("Job Executed Successfully", HttpStatus.OK);
 			} else {
 				SFTPStatus = sftpComponent.uploadFileLocalToRemote(getLocalPath.concat(getFileName),
-						getSFTPExceptionDirectory);
+						getSFTPExceptionDirectory,true);
 				response = new ResponseEntity("Job Failed", HttpStatus.SEE_OTHER);
 			}
 		} else {

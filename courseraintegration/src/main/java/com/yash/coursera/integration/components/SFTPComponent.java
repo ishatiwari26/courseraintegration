@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,14 +33,20 @@ public class SFTPComponent {
 	@Value("${sftp.password}")
 	private String getSFTPPassword;
 
+	private Session session;
+	private ChannelSftp sftpChannel;
+
+	private BufferedInputStream bufferedInputStream;
+	private BufferedOutputStream bufferedOutputStream;
+	private FileInputStream fileInputStream;
+	private OutputStream outPutStream;
+	private InputStream inputStream;
+
 	private JSch jsch;
 
 	public void setJsch(JSch jsch) {
 		this.jsch = jsch;
 	}
-
-	private Session session;
-	private ChannelSftp sftpChannel;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SFTPComponent.class);
 
@@ -49,21 +57,31 @@ public class SFTPComponent {
 	public Integer downloadFileRemoteToLocal(String remoteDir, String localDir) {
 		Integer readCount = null;
 		byte[] buffer = new byte[1024];
-		BufferedInputStream bufferedInputStream;
+
 		connectToSFTP();
+
 		try {
+
 			String cdDir = remoteDir.substring(0, remoteDir.lastIndexOf("/") + 1);
 			sftpChannel.cd(cdDir);
 			File fileRemote = new File(remoteDir);
-			bufferedInputStream = new BufferedInputStream(sftpChannel.get(fileRemote.getName()));
+			bufferedInputStream = getBufferedInputStream(fileRemote);
+			/*
+			 * setBufferedInputStream(sftpChannel.get(fileRemote.getName()));
+			 * bufferedInputStream=getBufferedInputStream();
+			 */
 			File directory = new File(localDir);
 			if (!directory.exists()) {
 				directory.mkdir();
 			}
 			File newFile = new File(localDir + "/" + fileRemote.getName());
 
-			OutputStream outPutStream = new FileOutputStream(newFile);
-			BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outPutStream);
+			outPutStream = new FileOutputStream(newFile);
+
+			bufferedOutputStream = new BufferedOutputStream(outPutStream);
+
+			// System.out.println( bufferedInputStream.read(buffer));
+
 			while ((readCount = bufferedInputStream.read(buffer)) > 0) {
 				bufferedOutputStream.write(buffer, 0, readCount);
 			}
@@ -79,23 +97,33 @@ public class SFTPComponent {
 		return readCount;
 	}
 
-	public boolean uploadFileLocalToRemote(String localDir, String remoteDir) {
+	public boolean uploadFileLocalToRemote(String localDir, String remoteDir, Boolean sftpModifierStatus) {
+		long yourmilliseconds = System.currentTimeMillis();
+		Date resultdate = new Date(yourmilliseconds);
 		boolean isUploaded = false;
-		FileInputStream fileInputStream = null;
 		connectToSFTP();
 		try {
 			sftpChannel.cd(remoteDir);
 			File fileLocal = new File(localDir);
 			fileInputStream = new FileInputStream(fileLocal);
 			sftpChannel.put(fileInputStream, fileLocal.getName());
+			if (sftpModifierStatus) {
+				File newFile = new File(localDir);
+				String[] oldFile = newFile.getName().toString().split(".csv");
+				localDir = oldFile[0].concat("_" + resultdate.toString());
+				localDir = localDir.concat(".csv");
+				sftpChannel.rename(remoteDir + fileLocal.getName(), remoteDir + localDir);
+			}
 			fileInputStream.close();
-			if (fileLocal.delete())
-				isUploaded = true;
+			disconnectFromSFTP();
+			fileLocal.setWritable(true);
+			if (fileLocal.exists())
+				if (fileLocal.delete())
+					isUploaded = true;
 		} catch (IOException | SftpException e) {
 			LOGGER.error("uploadLocalToRemote [SFTP file transfer failure from local to remote] :: " + e.getMessage());
 			e.printStackTrace();
 		}
-		disconnectFromSFTP();
 		return isUploaded;
 	}
 
@@ -121,10 +149,10 @@ public class SFTPComponent {
 	}
 
 	public boolean moveInboundToLocalViaProcess(String remoteInboundDir, String remoteProcessDir, String localDir,
-			String fileName) {
+			String fileName, Boolean sftModifierStatus) {
 		boolean isMoved = false;
 		if (downloadFileRemoteToLocal(remoteInboundDir.concat(fileName), localDir) < 0) {
-			if (uploadFileLocalToRemote(localDir.concat(fileName), remoteProcessDir)) {
+			if (uploadFileLocalToRemote(localDir.concat(fileName), remoteProcessDir, sftModifierStatus)) {
 				if (downloadFileRemoteToLocal(remoteProcessDir.concat(fileName), localDir) < 0) {
 					isMoved = true;
 				}
@@ -133,4 +161,14 @@ public class SFTPComponent {
 
 		return isMoved;
 	}
+
+	public BufferedInputStream getBufferedInputStream(File fileRemote) throws SftpException {
+		bufferedInputStream = new BufferedInputStream(sftpChannel.get(fileRemote.getName()));
+		return bufferedInputStream;
+	}
+
+	public void setBufferedInputStream(InputStream inputStream) {
+		this.inputStream = inputStream;
+	}
+
 }

@@ -81,45 +81,6 @@ public class CustomDBWriterTest {
 		customDBWriter.beforeStep(stepExecution);
 	}
 
-	/*@Test
-	public void shouldThrowIndexOutOfBoundException_ForProgramAPI_WhenInsertNullSfLMSMappers() throws Exception {
-		List<? extends List<SFLmsMapper>> listOfSfLMSMappersList = new ArrayList<>();
-		when(stepExecution.getJobExecution()).thenReturn(jobExecution);
-		when(jobExecution.getJobParameters()).thenReturn(jobParameters);
-		when(jobParameters.getString("jobName")).thenReturn("loadProgramAPI");
-		doNothing().when(courseraAPIDataDao).deleteProgram();
-		customDBWriter.beforeStep(stepExecution);
-		doThrow(new IndexOutOfBoundsException("Index: 0, Size: 0")).when(courseraAPIDataDao)
-				.insertProgram(Mockito.any());
-		customDBWriter.write(listOfSfLMSMappersList);
-	}*/
-
-	/*@Test
-	public void shouldThrowIndexOutOfBoundException_ForContentAPI_WhenInsertNullSfLMSMappers() throws Exception {
-		List<? extends List<SFLmsMapper>> listOfSfLMSMappersList = new ArrayList<>();
-		when(stepExecution.getJobExecution()).thenReturn(jobExecution);
-		when(jobExecution.getJobParameters()).thenReturn(jobParameters);
-		when(jobParameters.getString("jobName")).thenReturn("loadContentAPI");
-		doNothing().when(courseraAPIDataDao).deleteContent();
-		customDBWriter.beforeStep(stepExecution);
-		doThrow(new IndexOutOfBoundsException("Index: 0, Size: 0")).when(courseraAPIDataDao)
-				.insertContent(Mockito.any());
-		customDBWriter.write(listOfSfLMSMappersList);
-	}*/
-
-	/*@Test
-	public void shouldThrowIndexOutOfBoundException_ForStatusAPI_WhenInsertNullSfLMSMappers() throws Exception {
-		List<? extends List<SFLmsMapper>> listOfSfLMSMappersList = new ArrayList<>();
-		when(stepExecution.getJobExecution()).thenReturn(jobExecution);
-		when(jobExecution.getJobParameters()).thenReturn(jobParameters);
-		when(jobParameters.getString("jobName")).thenReturn("loadStatusAPI");
-		doNothing().when(courseraAPIDataDao).deleteStatus();
-		customDBWriter.beforeStep(stepExecution);
-		doThrow(new IndexOutOfBoundsException("Index: 0, Size: 0")).when(courseraAPIDataDao)
-				.insertStatus(Mockito.any());
-		customDBWriter.write(listOfSfLMSMappersList);
-	}*/
-
 	@Test
 	public void shouldWriteToDB_ForProgramAPI() throws Exception {
 		when(stepExecution.getJobExecution()).thenReturn(jobExecution);

@@ -63,10 +63,8 @@ public class CourseraAPIDataDaoTest {
 	  public void setup() {
 		 MockitoAnnotations.initMocks(this);		 
 		 courseraAPIDataDaoImpl.initialize();
-//		 jdbcTemplate.setDataSource(dataSource);
 	  }
 
-	
 	@Test
 	public void shouldInsertProgram() throws SQLException {
 			List<SFLmsMapper> listOfSfLmsMapper=new ArrayList<>();
@@ -94,12 +92,4 @@ public class CourseraAPIDataDaoTest {
 		
 		courseraAPIDataDaoImpl.insertStatus(listOfSfLmsMapper);
 	}
-	/*@Test
-	public void shouldDeleteStatus() throws SQLException {
-		when(jdbcDaoSupport.getJdbcTemplate()).thenReturn(jdbcTemplate);
-		doNothing().when(jdbcTemplate).execute(Mockito.anyString());
-		
-		courseraAPIDataDaoImpl.deleteStatus();
-	}*/
-
 }

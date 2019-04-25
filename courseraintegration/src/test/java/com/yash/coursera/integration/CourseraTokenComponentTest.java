@@ -100,15 +100,4 @@ public class CourseraTokenComponentTest {
 				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(String.class))).thenReturn(response);
 		assertEquals(response,courseraComponent.callContentsAPI(0, 0, accessToken));
 	}
-	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void shouldPostUserInvitation(){
-		String accessToken = "testAccessToken";
-		ResponseEntity<ApiResponse> response = Mockito.mock(ResponseEntity.class);
-		Mockito.mock(HttpEntity.class);
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.any(HttpMethod.class),
-				Mockito.any(HttpEntity.class), ArgumentMatchers.eq(ApiResponse.class))).thenReturn(response);
-	//	assertEquals(response, courseraComponent.postInvitation("progId",accessToken, new User()));
-	}
 }

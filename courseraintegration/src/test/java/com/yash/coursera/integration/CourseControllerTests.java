@@ -149,31 +149,6 @@ public class CourseControllerTests {
 		assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
 	}
 
-	/*
-	 * @Test(expected=JobExecutionAlreadyRunningException.class) public void
-	 * shouldThrowExeption_WhenLoadContentAPI() throws Exception{ //
-	 * exception.expect(JobExecutionAlreadyRunningException.class);
-	 * Mockito.mock(JobParameter.class); // Mockito.mock(JobParameters.class);
-	 * JobParameters jobParams=new JobParameters(Mockito.mock(HashMap.class));
-	 * JobExecution jobExecution = new JobExecution(1L);
-	 * jobExecution.setStatus(BatchStatus.FAILED); JobExecution jobExecution =
-	 * Mockito.mock(JobExecution.class);
-	 * Mockito.when(jobExecution.getStatus()).thenThrow(
-	 * JobExecutionAlreadyRunningException.class); Mockito.mock(HashMap.class);
-	 * Job job = new SimpleJob();
-	 * Mockito.when(config.processJob()).thenReturn(job); JobParameters
-	 * jobParameters = new JobParametersBuilder()
-	 * .addLong("time",System.currentTimeMillis()).toJobParameters();
-	 * Mockito.when(jobLauncher.run(Mockito.any(Job.class),Mockito.any(
-	 * JobParameters.class))) .thenThrow(new
-	 * JobExecutionAlreadyRunningException("New Instance created"));
-	 * 
-	 * Mockito.when(jobLauncher.run(Mockito.any(Job.class),Mockito.any(
-	 * JobParameters.class))).thenReturn(jobExecution);
-	 * 
-	 * mockMvc.perform(get("/loadContentAPI").contentType("application/json"));
-	 * // .andExpect(status().isInternalServerError()); }
-	 */
 	@Test
 	public void shouldLoadProgramAPI() throws Exception {
 		Mockito.mock(JobParameter.class);
@@ -215,7 +190,7 @@ public class CourseControllerTests {
 	@Test
 	public void shouldLoadUserInvitationAPI() throws Exception {
 		when(sftpComponent.moveInboundToLocalViaProcess(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenReturn(true);
+				Mockito.anyString(),Mockito.anyBoolean())).thenReturn(true);
 		Mockito.mock(JobParameter.class);
 		Mockito.mock(JobParameters.class);
 		JobExecution jobExecution = new JobExecution(1L);
@@ -229,7 +204,7 @@ public class CourseControllerTests {
 		when(fileOpUtil.readAccessToken()).thenReturn(map);
 		Mockito.when(jobLauncher.run(Mockito.any(Job.class), Mockito.any(JobParameters.class)))
 				.thenReturn(jobExecution);
-		when(sftpComponent.uploadFileLocalToRemote(Mockito.anyString(),Mockito.anyString())).thenReturn(true);
+		when(sftpComponent.uploadFileLocalToRemote(Mockito.anyString(),Mockito.anyString(),Mockito.anyBoolean())).thenReturn(true);
 		mockMvc.perform(get("/loadInvitationAPI").contentType("application/json")).andExpect(status().isOk());
 		assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
 	}
@@ -237,45 +212,10 @@ public class CourseControllerTests {
 	@Test
 	public void shouldLoadUserInvitationAPI_WhenSFTPFalse() throws Exception {
 		when(sftpComponent.moveInboundToLocalViaProcess(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenReturn(false);
+				Mockito.anyString(),Mockito.anyBoolean())).thenReturn(false);
 		JobExecution jobExecution = new JobExecution(1L);
-		when(sftpComponent.uploadFileLocalToRemote(Mockito.anyString(),Mockito.anyString())).thenReturn(true);
+		when(sftpComponent.uploadFileLocalToRemote(Mockito.anyString(),Mockito.anyString(),Mockito.anyBoolean())).thenReturn(true);
 		mockMvc.perform(get("/loadInvitationAPI").contentType("application/json")).andExpect(status().is(404));
 		assertEquals(BatchStatus.STARTING, jobExecution.getStatus());
 	}
-	
-
-	/*
-	 * @Test public void shouldUnAutjorixedWhenPostUserWhoNotInvided() throws
-	 * Exception{ JSONObject userInviteJsonObject=new JSONObject();
-	 * userInviteJsonObject.accumulate("externalId", "testExternalId");
-	 * userInviteJsonObject.accumulate("fullName", "testFullName");
-	 * userInviteJsonObject.accumulate("email", "testEmail");
-	 * mockMvc.perform(get("/invitation?programId=Q0Wzd5osEei1PwqN7iH8Jg").
-	 * contentType("application/json") .content(
-	 * "externalId=testExternalId,fullName=testFullName,email=testEmail")).
-	 * andExpect(status().is(404)); }
-	 */
-	/*
-	 * private JSONObject getDumyJSONObject() { JSONObject jsonObj = new
-	 * JSONObject(); jsonObj.put("name", "YASH Technologies Learning Program");
-	 * jsonObj.put("tagline", "Start learning on Coursera!");
-	 * 
-	 * JSONObject jsonObjChild = new JSONObject(); jsonObjChild.put("contentId",
-	 * "zj2VppjQEeWh0Q5bBaG7rw"); jsonObjChild.put("contentType",
-	 * "Specialization");
-	 * 
-	 * JSONArray contentArray = new JSONArray(); contentArray.put(jsonObjChild);
-	 * 
-	 * jsonObj.put("contentIds", contentArray);
-	 * 
-	 * jsonObj.put("id", "Q0Wzd5osEei1PwqN7iH8Jg"); jsonObj.put("url",
-	 * "https://www.coursera.org/programs/yash-technologies-learning-program-ziplt"
-	 * );
-	 * 
-	 * JSONArray jsonArray = new JSONArray(); jsonArray.put(jsonObj);
-	 * 
-	 * JSONObject mainObj = new JSONObject(); mainObj.put("elements",
-	 * jsonArray); return mainObj; }
-	 */
 }
