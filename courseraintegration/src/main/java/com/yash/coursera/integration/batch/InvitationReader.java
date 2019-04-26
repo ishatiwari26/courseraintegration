@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
+import com.yash.coursera.integration.helper.GlobalConstants;
 import com.yash.coursera.integration.model.User;
 
 @Configuration
@@ -26,10 +27,10 @@ public class InvitationReader {
 
 		FlatFileItemReader<User> flatFileReader = new FlatFileItemReader<>();
 		flatFileReader.setResource(new FileSystemResource(localPath + fileName));
-		flatFileReader.setName("user csv reader");
+		flatFileReader.setName(GlobalConstants.READER_NAME);
 		flatFileReader.setLinesToSkip(1);
 		flatFileReader.setLineMapper(lineMapper());
-		flatFileReader.setStrict(false);
+		flatFileReader.setStrict(true);
 
 		return flatFileReader;
 	}
@@ -40,8 +41,8 @@ public class InvitationReader {
 		DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
 
 		lineTokenizer.setDelimiter(",");
-		lineTokenizer.setStrict(true);
-		lineTokenizer.setNames(new String[] { "externalId", "email", "fullName", "status" });
+		lineTokenizer.setStrict(false);
+		lineTokenizer.setNames(new String[] {"externalId", "email", "fullName", "status"});
 
 		BeanWrapperFieldSetMapper<User> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
 		fieldSetMapper.setTargetType(User.class);
@@ -50,6 +51,5 @@ public class InvitationReader {
 		defaultLineMapper.setFieldSetMapper(fieldSetMapper);
 
 		return defaultLineMapper;
-
 	}
 }

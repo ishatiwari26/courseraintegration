@@ -101,7 +101,7 @@ public class BatchConfig {
 	public Step inviteStep() {
 
 		Step stepInviteApiCall = null;
-		stepInviteApiCall = stepBuilderFactory.get(GlobalConstants.STEP_NAME).allowStartIfComplete(false)
+		stepInviteApiCall = stepBuilderFactory.get(GlobalConstants.INVITATION_STEP_NAME).allowStartIfComplete(false)
 				.<User, User>chunk(3)
 				.reader(itemReader)
 				.writer(inviteWriter)

@@ -1,6 +1,7 @@
 package com.yash.coursera.integration.controller;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -294,10 +295,10 @@ public class CourseController {
 		ResponseEntity<String> response = null;
 		/* ######################### It will come from InvitationAPI ######################### */
 		EmailContents emailContent = new EmailContents();
-		long yourmilliseconds = System.currentTimeMillis();
-		Date resultdate = new Date(yourmilliseconds);
+		/*long yourmilliseconds = System.currentTimeMillis();
+		Date resultdate = new Date(yourmilliseconds);*/
 		emailContent.setMailSubject("SFTP User Invitation Details");
-		emailContent.setCurrentDate(resultdate);
+		emailContent.setCurrentDate(LocalDate.now());
 		emailContent.setTotalInvitationCount(100);
 		emailContent.setSuccessInvitationCount(98);
 		emailContent.setFailedInvitationCount(2);
@@ -319,47 +320,5 @@ public class CourseController {
 		refreshToken = tokensMap.get(GlobalConstants.REFRESH_TOKEN_KEY);
 		return (accessToken == null && refreshToken == null);
 	}
-
-	/*
-	 * @ApiOperation(value = "send invite to users", response = List.class)
-	 * 
-	 * @ApiResponses(value = { @ApiResponse(code = 201, message =
-	 * "Successfully send invite"),
-	 * 
-	 * @ApiResponse(code = 401, message =
-	 * "You are not authorized to view the resource"),
-	 * 
-	 * @ApiResponse(code = 403, message =
-	 * "Accessing the resource you were trying to reach is forbidden"),
-	 * 
-	 * @ApiResponse(code = 404, message =
-	 * "The resource you were trying to reach is not found") })
-	 * 
-	 * @RequestMapping(value = "/invitation/{programId}", method =
-	 * RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes
-	 * = MediaType.APPLICATION_JSON_VALUE)
-	 * 
-	 * @ResponseBody public ResponseEntity<String>
-	 * getInviteList(@PathVariable("programId") String programId,
-	 * 
-	 * @RequestBody User userInvitation, HttpServletRequest req,
-	 * HttpServletResponse res) { ResponseEntity<String> response = null;
-	 * Map<String, String> tokensMap = FileOpUtils.readAccessToken(); try {
-	 * 
-	 * if (tokensMap.get("access_token") == null ||
-	 * tokensMap.get("access_token") == "") { response = new ResponseEntity<>
-	 * ("Authorize client and generate token by calling /generateToken API",
-	 * HttpStatus.UNAUTHORIZED); } else { response =
-	 * courseraComponent.postInvitation(programId,
-	 * tokensMap.get("access_token"), userInvitation); }
-	 * 
-	 * } catch (RestClientException e) { try { accessToken =
-	 * courseraComponent.getNewAccessToken(tokensMap.get("refresh_token"));
-	 * response = courseraComponent.postInvitation(programId, accessToken,
-	 * userInvitation); } catch (RestClientException ex) { response = new
-	 * ResponseEntity<>
-	 * ("Authorize client  and generate token by calling /generateToken API",
-	 * HttpStatus.UNAUTHORIZED); } } return response; }
-	 */
 
 }
