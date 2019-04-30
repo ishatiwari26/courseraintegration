@@ -35,6 +35,7 @@ import org.springframework.web.client.RestTemplate;
 import com.jcraft.jsch.JSch;
 import com.yash.coursera.integration.components.CourseraTokenComponent;
 import com.yash.coursera.integration.components.SFTPComponent;
+import com.yash.coursera.integration.components.TLSEmailComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.controller.CourseController;
 import com.yash.coursera.integration.helper.FileOpUtils;
@@ -67,6 +68,10 @@ public class CourseControllerTests {
 
 	@MockBean
 	private SFTPComponent sftpComponent;
+	
+	@MockBean
+	private TLSEmailComponent tlsEmailComponent;
+	
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();

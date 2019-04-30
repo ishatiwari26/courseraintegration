@@ -6,13 +6,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import com.jcraft.jsch.ChannelSftp;
@@ -32,6 +34,13 @@ public class SFTPComponent {
 
 	@Value("${sftp.password}")
 	private String getSFTPPassword;
+	
+	@Autowired
+	private ResourceLoader resourceLoader;
+	
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
 	private Session session;
 	private ChannelSftp sftpChannel;
@@ -40,7 +49,6 @@ public class SFTPComponent {
 	private BufferedOutputStream bufferedOutputStream;
 	private FileInputStream fileInputStream;
 	private OutputStream outPutStream;
-	private InputStream inputStream;
 
 	private JSch jsch;
 
@@ -57,30 +65,25 @@ public class SFTPComponent {
 	public Integer downloadFileRemoteToLocal(String remoteDir, String localDir) {
 		Integer readCount = null;
 		byte[] buffer = new byte[1024];
-
 		connectToSFTP();
-
 		try {
-
 			String cdDir = remoteDir.substring(0, remoteDir.lastIndexOf("/") + 1);
 			sftpChannel.cd(cdDir);
-			File fileRemote = new File(remoteDir);
-			bufferedInputStream = getBufferedInputStream(fileRemote);
-			/*
-			 * setBufferedInputStream(sftpChannel.get(fileRemote.getName()));
-			 * bufferedInputStream=getBufferedInputStream();
-			 */
-			File directory = new File(localDir);
+			Resource  resourceRemote = resourceLoader.getResource("file:"+remoteDir);
+			File fileRemote = resourceRemote.getFile();
+			bufferedInputStream = new BufferedInputStream(sftpChannel.get(fileRemote.getName()));
+			
+			Resource  resourceLocal = resourceLoader.getResource("file:"+localDir);
+			File directory = resourceLocal.getFile();
 			if (!directory.exists()) {
 				directory.mkdir();
 			}
-			File newFile = new File(localDir + "/" + fileRemote.getName());
+			Resource  resource = resourceLoader.getResource("file:"+localDir + fileRemote.getName());
+			File newFile = resource.getFile();
 
 			outPutStream = new FileOutputStream(newFile);
 
 			bufferedOutputStream = new BufferedOutputStream(outPutStream);
-
-			// System.out.println( bufferedInputStream.read(buffer));
 
 			while ((readCount = bufferedInputStream.read(buffer)) > 0) {
 				bufferedOutputStream.write(buffer, 0, readCount);
@@ -104,12 +107,12 @@ public class SFTPComponent {
 		connectToSFTP();
 		try {
 			sftpChannel.cd(remoteDir);
-			File fileLocal = new File(localDir);
+			Resource  resource = resourceLoader.getResource("file:"+localDir);
+			File fileLocal = resource.getFile();
 			fileInputStream = new FileInputStream(fileLocal);
 			sftpChannel.put(fileInputStream, fileLocal.getName());
 			if (sftpModifierStatus) {
-				File newFile = new File(localDir);
-				String[] oldFile = newFile.getName().toString().split(".csv");
+				String[] oldFile = fileLocal.getName().toString().split(".csv");
 				localDir = oldFile[0].concat("_" + resultdate.toString());
 				localDir = localDir.concat(".csv");
 				sftpChannel.rename(remoteDir + fileLocal.getName(), remoteDir + localDir);
@@ -161,14 +164,4 @@ public class SFTPComponent {
 
 		return isMoved;
 	}
-
-	public BufferedInputStream getBufferedInputStream(File fileRemote) throws SftpException {
-		bufferedInputStream = new BufferedInputStream(sftpChannel.get(fileRemote.getName()));
-		return bufferedInputStream;
-	}
-
-	public void setBufferedInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
-
 }
