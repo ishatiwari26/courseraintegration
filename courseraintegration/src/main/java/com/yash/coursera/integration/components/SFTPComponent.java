@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Date;
 
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+import com.yash.coursera.integration.helper.FileOpUtils;
 
 @Component
 public class SFTPComponent {
@@ -37,6 +39,8 @@ public class SFTPComponent {
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
+	@Autowired
+	private FileOpUtils fileOpUtils;
 	
 	public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -109,7 +113,8 @@ public class SFTPComponent {
 			sftpChannel.cd(remoteDir);
 			Resource  resource = resourceLoader.getResource("file:"+localDir);
 			File fileLocal = resource.getFile();
-			fileInputStream = new FileInputStream(fileLocal);
+//			fileInputStream = new FileInputStream(fileLocal);
+			fileInputStream = fileOpUtils.getFileInputStream(fileLocal);
 			sftpChannel.put(fileInputStream, fileLocal.getName());
 			if (sftpModifierStatus) {
 				String[] oldFile = fileLocal.getName().toString().split(".csv");

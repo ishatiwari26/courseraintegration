@@ -1,6 +1,8 @@
 package com.yash.coursera.integration.helper;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URL;
@@ -61,7 +63,10 @@ public class FileOpUtils {
 		return tokensMap;
 
 	}
-
+ public FileInputStream getFileInputStream(File fileLocal) throws FileNotFoundException{
+	 return new FileInputStream(fileLocal);
+	 
+ }
 	protected static URL getResourceUrl() {
 		return FileOpUtils.class.getResource("/token.txt");
 	}
