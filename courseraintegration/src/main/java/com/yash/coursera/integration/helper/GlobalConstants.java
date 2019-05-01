@@ -31,5 +31,13 @@ public class GlobalConstants {
 	public static final String ERROR_ID_MESSAGE = "DUPLICATE_EXTERNAL_ID";
 	public static final String ERROR_EMAIL_MESSAGE = "INVITATION_ALREADY_EXISTS";
 	public static final String ERROR_STATUS_MESSAGE = "INVALID USER STATUS";
+	public static final String SCOPE = "scope";
+	
+	public static final String  USER_ID_KEY = "userId";
+	public static final String  COMPANY_ID_KEY= "companyId";
+	public static final String  USER_TYPE_KEY = "userType";
+	public static final String  RESOURCE_TYPE_KEY = "resourceType";
+	public static final String AUTHORIZATION_KEY = "Authorization";
+	public static final String EXPIRES_IN = "expires_in";
 
 }
