@@ -84,7 +84,8 @@ public class LMSAuthorizationHelper {
 		try {
 			JSONObject jsonObj = new JSONObject(body);
 			accessToken = (String) jsonObj.get(GlobalConstants.ACCESS_TOKEN_KEY);
-			authTokenExpirationTime.plusSeconds((Long) jsonObj.get(GlobalConstants.EXPIRES_IN));
+			authTokenExpirationTime = authTokenExpirationTime.plusSeconds( Long.parseLong(""+jsonObj.get(GlobalConstants.EXPIRES_IN)));
+			logger.info("LMS auth token valid till>>" + authTokenExpirationTime.toString());
 		} catch (Exception e) {
 
 		}
