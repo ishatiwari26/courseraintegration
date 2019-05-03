@@ -1,4 +1,4 @@
-package com.yash.coursera.integration;
+package com.yash.coursera.integration.component;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doNothing;

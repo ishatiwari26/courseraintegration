@@ -39,7 +39,7 @@ import com.yash.coursera.integration.helper.FileOpUtils;
 public class SFTPComponentTest {
 
 	@InjectMocks
-	SFTPComponent sftpComponent = new SFTPComponent();
+	SFTPComponent sftpComponent;
 
 	@Mock
 	private JSch jsch;
@@ -151,7 +151,7 @@ public class SFTPComponentTest {
 	}
 
 	@Test
-	public void shouldDownloadFile_WhenDirectyExist_FileWrite() throws JSchException, SftpException, IOException {
+	public void shouldDownloadFile_WhenDirectyNotExist_FileWrite() throws JSchException, SftpException, IOException {
 		when(jsch.getSession(Mockito.anyString(), Mockito.anyString())).thenReturn(session);
 		doNothing().when(session).connect();
 		when(session.openChannel("sftp")).thenReturn(sftpChannel);
@@ -162,15 +162,49 @@ public class SFTPComponentTest {
 		when(resource.getFile()).thenReturn(getDummyFile()).thenReturn(fileRemote).thenReturn(getDummyFile());
 
 		when(sftpChannel.get(Mockito.anyString())).thenReturn(inputStream);
+		when(fileOpUtils.getBufferedInputStream(Mockito.any())).thenReturn(bufferedInputStream);
 
 		when(fileRemote.exists()).thenReturn(false);
 		when(fileRemote.mkdir()).thenReturn(true);
 
+		when(fileOpUtils.getFileOutputStream(Mockito.any())).thenReturn(outPutStream);
+		when(fileOpUtils.getBufferedOutputStream(Mockito.any())).thenReturn(bufferedOutputStream);
+		when(bufferedInputStream.read(Mockito.any())).thenReturn(141).thenReturn(-1);
+		doNothing().when(bufferedOutputStream).write(Mockito.any(),Mockito.anyInt(),Mockito.anyInt());
+		
 		doNothing().when(sftpChannel).rm(Mockito.anyString());
 
 		doNothing().when(sftpChannel).disconnect();
 		doNothing().when(session).disconnect();
 
+		sftpComponent.downloadFileRemoteToLocal("/testRemote/test.txt", "/testLocal");
+	}
+	@Test
+	public void shouldDownloadFile_WhenDirectyExist_FileWrite() throws JSchException, SftpException, IOException {
+		when(jsch.getSession(Mockito.anyString(), Mockito.anyString())).thenReturn(session);
+		doNothing().when(session).connect();
+		when(session.openChannel("sftp")).thenReturn(sftpChannel);
+		doNothing().when(sftpChannel).connect();
+		
+		doNothing().when(sftpChannel).cd(Mockito.anyString());
+		when(resourceLoader.getResource(Mockito.anyString())).thenReturn(resource);
+		when(resource.getFile()).thenReturn(getDummyFile()).thenReturn(fileRemote).thenReturn(getDummyFile());
+		
+		when(sftpChannel.get(Mockito.anyString())).thenReturn(inputStream);
+		when(fileOpUtils.getBufferedInputStream(Mockito.any())).thenReturn(bufferedInputStream);
+		
+		when(fileRemote.exists()).thenReturn(true);
+		
+		when(fileOpUtils.getFileOutputStream(Mockito.any())).thenReturn(outPutStream);
+		when(fileOpUtils.getBufferedOutputStream(Mockito.any())).thenReturn(bufferedOutputStream);
+		when(bufferedInputStream.read(Mockito.any())).thenReturn(141).thenReturn(-1);
+		doNothing().when(bufferedOutputStream).write(Mockito.any(),Mockito.anyInt(),Mockito.anyInt());
+		
+		doNothing().when(sftpChannel).rm(Mockito.anyString());
+		
+		doNothing().when(sftpChannel).disconnect();
+		doNothing().when(session).disconnect();
+		
 		sftpComponent.downloadFileRemoteToLocal("/testRemote/test.txt", "/testLocal");
 	}
 	@Test

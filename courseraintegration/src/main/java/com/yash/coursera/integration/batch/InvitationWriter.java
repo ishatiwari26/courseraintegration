@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.yash.coursera.integration.components.CourseraTokenComponent;
-import com.yash.coursera.integration.components.TLSEmailComponent;
+import com.yash.coursera.integration.components.EmailTLSComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.helper.FileOpUtils;
@@ -43,7 +43,7 @@ public class InvitationWriter implements ItemWriter<User> {
 	private CourseraTokenComponent courseraTokenComponent;
 
 	@Autowired
-	private TLSEmailComponent emailComponent;
+	private EmailTLSComponent emailComponent;
 
 	private InvitationParameters invitationParameters;
 	private String accessToken;

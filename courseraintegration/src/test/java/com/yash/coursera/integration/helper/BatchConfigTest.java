@@ -1,4 +1,4 @@
-package com.yash.coursera.integration;
+package com.yash.coursera.integration.helper;
 
 
 import org.junit.Assert;

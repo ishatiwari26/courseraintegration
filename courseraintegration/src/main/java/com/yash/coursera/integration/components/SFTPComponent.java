@@ -4,12 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Date;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +73,7 @@ public class SFTPComponent {
 			sftpChannel.cd(cdDir);
 			Resource  resourceRemote = resourceLoader.getResource("file:"+remoteDir);
 			File fileRemote = resourceRemote.getFile();
-			bufferedInputStream = new BufferedInputStream(sftpChannel.get(fileRemote.getName()));
+			bufferedInputStream = fileOpUtils.getBufferedInputStream(sftpChannel.get(fileRemote.getName()));
 			
 			Resource  resourceLocal = resourceLoader.getResource("file:"+localDir);
 			File directory = resourceLocal.getFile();
@@ -85,9 +83,9 @@ public class SFTPComponent {
 			Resource  resource = resourceLoader.getResource("file:"+localDir + fileRemote.getName());
 			File newFile = resource.getFile();
 
-			outPutStream = new FileOutputStream(newFile);
+			outPutStream = fileOpUtils.getFileOutputStream(newFile);
 
-			bufferedOutputStream = new BufferedOutputStream(outPutStream);
+			bufferedOutputStream = fileOpUtils.getBufferedOutputStream(outPutStream);
 
 			while ((readCount = bufferedInputStream.read(buffer)) > 0) {
 				bufferedOutputStream.write(buffer, 0, readCount);

@@ -2,8 +2,11 @@ package com.yash.coursera.integration.helper;
 
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 import com.yash.coursera.integration.model.EmailContents;
 
+@Component
 public class EmailBodyUtil {
 
 	public String settingEmailBody(EmailContents emailContents, Map<String, String> userRefWithError) {

@@ -1,4 +1,4 @@
-package com.yash.coursera.integration;
+package com.yash.coursera.integration.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doNothing;
@@ -34,12 +34,12 @@ import org.springframework.web.client.RestTemplate;
 
 import com.jcraft.jsch.JSch;
 import com.yash.coursera.integration.components.CourseraTokenComponent;
+import com.yash.coursera.integration.components.EmailTLSComponent;
 import com.yash.coursera.integration.components.SFTPComponent;
-import com.yash.coursera.integration.components.TLSEmailComponent;
 import com.yash.coursera.integration.config.BatchConfig;
-import com.yash.coursera.integration.controller.CourseController;
 import com.yash.coursera.integration.helper.FileOpUtils;
 import com.yash.coursera.integration.helper.GlobalConstants;
+import com.yash.coursera.integration.helper.LMSAuthorizationHelper;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(CourseController.class)
@@ -70,7 +70,10 @@ public class CourseControllerTests {
 	private SFTPComponent sftpComponent;
 	
 	@MockBean
-	private TLSEmailComponent tlsEmailComponent;
+	private EmailTLSComponent emailComponent;
+	
+	@MockBean
+	private LMSAuthorizationHelper authHelper;
 	
 
 	@Rule

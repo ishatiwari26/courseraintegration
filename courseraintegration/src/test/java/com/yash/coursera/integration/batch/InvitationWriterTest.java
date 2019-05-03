@@ -23,7 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.yash.coursera.integration.components.CourseraTokenComponent;
-import com.yash.coursera.integration.components.TLSEmailComponent;
+import com.yash.coursera.integration.components.EmailTLSComponent;
 import com.yash.coursera.integration.config.BatchConfig;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.helper.FileOpUtils;
@@ -56,7 +56,7 @@ public class InvitationWriterTest {
 	private FileOpUtils fileOpUtils;
 
 	@Mock
-	private TLSEmailComponent emailComponent;
+	private EmailTLSComponent emailComponent;
 
 	@Test
 	public void shouldExecuteBeforeSetup() {
