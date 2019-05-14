@@ -39,5 +39,25 @@ public class GlobalConstants {
 	public static final String  RESOURCE_TYPE_KEY = "resourceType";
 	public static final String AUTHORIZATION_KEY = "Authorization";
 	public static final String EXPIRES_IN = "expires_in";
+	
+	public static final String OCN_COURSES = "ocnCourses";
+	public static final String COURSE_ID = "courseID";
+	public static final String PROVIDER_ID = "providerID";
+	public static final String STATUS = "status";
+	public static final String TITLE = "title";
+	public static final String CONTENT_DESCRIPTION = "description";
+	public static final String THUMBNAIL_URI = "thumbnailURI";
+	public static final String CONTENT = "content";
+	public static final String CONTENT_lOCALE = "locale";
+	public static final String CONTENT_VALUE = "value";
+	public static final String LAUNCH_URL = "launchURL";
+	public static final String CONTENT_TITLE = "contentTitle";
+	public static final String CONTENT_ID = "contentID";
+
+	public static final String STATUS_USER_ID_KEY = "userID";
+	public static final String STATUS_GRADE = "grade";
+	public static final String STATUS_COMPLETED_DATE = "completedTimestamp";
+	public static final String STATUS_COURSE_COMPLETED = "courseCompleted";
+	public static final String STATUS_COURSE_STATUS_OBJECT = "";
 
 }

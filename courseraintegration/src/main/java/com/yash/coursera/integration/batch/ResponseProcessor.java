@@ -46,15 +46,16 @@ public class ResponseProcessor implements ItemProcessor<Elements, List<SFLmsMapp
 		SFLmsMapper mapper = new SFLmsMapper();
 		mapper.setContentID(item.getContentId());
 		mapper.setContentTitle(item.getName());
-		mapper.setProviderID("YASH");
+		mapper.setProviderID("COURSERA");
 		mapper.setStatus("ACTIVE");
 
 		mapper.setId(item.getId());
 		mapper.setUserId(item.getUserId());
 		mapper.setIsCompleted(item.getIsCompleted());
-		mapper.setCompletedAt(item.getCompletedAt());
-		mapper.setGrade(item.getGrade());
-
+		if (item.getIsCompleted()) {
+			mapper.setCompletedAt(item.getCompletedAt());
+			mapper.setGrade(item.getGrade());
+		}
 		mapper.setTitle(new Title(item.getLanguageCode(), item.getName()));
 		mapper.setDescription(new Title(item.getLanguageCode(), item.getDescription()));
 		if (jobName.equals("loadContentAPI")) {

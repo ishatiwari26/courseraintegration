@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +107,10 @@ public class ResponseProcessorTest {
 		Element element = new Element();
 		element.setContentId("testContentId");
 		element.setContentType("testContentType");
+		element.setIsCompleted(true);
+		element.setCompletedAt(new Date(System.currentTimeMillis()));
+		element.setGrade("0.97");
+		
 		
 		Program program =new Program();
 		program.setContentUrl("http://testUrl.com");
@@ -130,6 +135,9 @@ public class ResponseProcessorTest {
 		Element element = new Element();
 		element.setContentId("testContentId");
 		element.setContentType("testContentType");
+		element.setIsCompleted(true);
+		element.setCompletedAt(new Date(System.currentTimeMillis()));
+		element.setGrade("0.97");
 		
 		Program program =new Program();
 		program.setContentUrl("http://testUrl.com");
@@ -150,7 +158,10 @@ public class ResponseProcessorTest {
 		Element element = new Element();
 		element.setContentId("testContentId");
 		element.setContentType("testContentType");
-
+		element.setIsCompleted(true);
+		element.setCompletedAt(new Date(System.currentTimeMillis()));
+		element.setGrade("0.97");
+		
 		element.setPrograms(null);
 		
 		Instructor instructor=new Instructor();

@@ -1,6 +1,8 @@
 package com.yash.coursera.integration.batch;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -143,7 +145,46 @@ public class ResponseReader implements ItemReader<Elements> {
 		ResponseEntity<ApiResponse> response = restTemplate.exchange(apiUrl + queryParams, HttpMethod.GET, entity,
 				ApiResponse.class);
 		index = index + limitCountPerRead;
+		
+		
+//		response.getBody().setElements(getElements());
 		return response.getBody();
+	}
+	private List<Element>  getElements() {
+		List<Element> elements = new ArrayList<>();
+		Element elementFirst = new Element();
+		elementFirst.setUserId("100009");
+		elementFirst.setId("Q0Wzd5osEei1PwqN7iH8Jg");
+		elementFirst.setIsCompleted(true);
+		elementFirst.setCompletedAt(new Date(System.currentTimeMillis()));
+		elementFirst.setGrade("0.91");
+		
+		Element elementSecond = new Element();
+		elementSecond.setUserId("100052");
+		elementSecond.setId("lfWYVKVPEeiVoQq-j07Zog");
+		elementSecond.setIsCompleted(true);
+		elementSecond.setCompletedAt(new Date(System.currentTimeMillis()));
+		elementSecond.setGrade("0.92");
+		
+		Element elementThird = new Element();
+		elementThird.setUserId("100083");
+		elementThird.setId("cH158posEeiRNRKU687nRg");
+		elementThird.setIsCompleted(true);
+		elementThird.setCompletedAt(new Date(System.currentTimeMillis()));
+		elementThird.setGrade("0.93");
+		
+		Element elementForth = new Element();
+		elementForth.setUserId("100093");
+		elementForth.setId("Q0Wzd5osEei1PwqN7iH8Jg");
+		elementForth.setIsCompleted(true);
+		elementForth.setCompletedAt(new Date(System.currentTimeMillis()));
+		elementForth.setGrade("0.94");
+		
+		elements.add(elementFirst);
+		elements.add(elementSecond);
+		elements.add(elementThird);
+		elements.add(elementForth);
+		return elements;
 	}
 
 }
