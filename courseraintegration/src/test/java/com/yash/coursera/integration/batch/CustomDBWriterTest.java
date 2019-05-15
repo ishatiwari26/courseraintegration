@@ -20,7 +20,6 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.yash.coursera.integration.components.LMSPostStatusComponent;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.model.Content;
 import com.yash.coursera.integration.model.Element;
@@ -37,9 +36,6 @@ public class CustomDBWriterTest {
 
 	@Mock
 	private CourseraAPIDataDao courseraAPIDataDao;
-
-	@Mock
-	private LMSPostStatusComponent lmsPostStatusComponent;
 
 	@Mock
 	private JobExecution jobExecution;
@@ -108,13 +104,13 @@ public class CustomDBWriterTest {
 	}
 
 	@Test
-	public void shouldWriteToDB_ForStatusAPI_WhenStatusCompleted() throws Exception {
+	public void shouldWriteToDB_ForStatusAPI() throws Exception {
 		when(stepExecution.getJobExecution()).thenReturn(jobExecution);
 		when(jobExecution.getJobParameters()).thenReturn(jobParameters);
 		when(jobParameters.getString("jobName")).thenReturn("loadStatusAPI");
 		doNothing().when(courseraAPIDataDao).deleteStatus();
 		customDBWriter.beforeStep(stepExecution);
-		doNothing().when(lmsPostStatusComponent).postLMSCoursesStatus(Mockito.any());
+		doNothing().when(courseraAPIDataDao).insertStatus(Mockito.any());
 		customDBWriter.write(getElementsOfSfLMSMappers());
 	}
 
@@ -133,49 +129,50 @@ public class CustomDBWriterTest {
 		element.setExternalId("testExternalId");
 		element.setEmail("testEmail");
 		element.setUserId("testUserId");
-		element.setIsCompleted(true);
+		element.setIsCompleted(false);
 		element.setCompletedAt(new Date(System.currentTimeMillis()));
-		element.setGrade("0.97");
-
-		Instructor instructor = new Instructor();
+		element.setGrade("testGrade");
+		
+		Instructor instructor=new Instructor();
 		instructor.setDepartment("testDepartment");
 		instructor.setName("testInstructorName");
 		instructor.setPhotoUrl("http://testImage.img");
 		instructor.setTitle("textTitle");
-
-		List<Instructor> listOfInstructor = new ArrayList<>();
+		
+		List<Instructor> listOfInstructor=new ArrayList<>();
 		listOfInstructor.add(instructor);
-
-		Content content = new Content();
+		
+		Content content=new Content();
 		content.setContentId("testContentID");
 		content.setContentType("testContentType");
-
-		List<Content> listOfContent = new ArrayList<>();
+		
+		List<Content> listOfContent=new ArrayList<>();
 		listOfContent.add(content);
-		Program program = new Program();
+		Program program=new Program();
 		program.setContentUrl("http://testContentUrl.com");
 		program.setProgramId("testProgramId");
-		List<Program> listOfProgram = new ArrayList<>();
+		List<Program> listOfProgram =new ArrayList<>();
 		listOfProgram.add(program);
-
-		Object extraMetadata = new Object();
-		Object partners = new Object();
-
+		
+		Object extraMetadata=new Object();
+		Object partners=new Object();
+		
 		element.setInstructors(listOfInstructor);
 		element.setContentIds(listOfContent);
 		element.setPrograms(listOfProgram);
 		element.setExtraMetadata(extraMetadata);
 		element.setPartners(partners);
-
+		
+		
 		List<Element> listOfElements = new ArrayList<>();
 		listOfElements.add(element);
-
+		
 		List<List<SFLmsMapper>> listOfSfLMSMappersList = new ArrayList<>();
 
 		List<SFLmsMapper> testSfLMSMappers = new ArrayList<SFLmsMapper>();
-
+		
 		SFLmsMapper testSFLmsMapper = new SFLmsMapper();
-
+		
 		testSFLmsMapper.setContentID(element.getContentId());
 		testSFLmsMapper.setContentTitle(element.getContentType());
 		testSFLmsMapper.setProviderID("YASH");
@@ -186,7 +183,7 @@ public class CustomDBWriterTest {
 		testSFLmsMapper.setIsCompleted(element.getIsCompleted());
 		testSFLmsMapper.setCompletedAt(element.getCompletedAt());
 		testSFLmsMapper.setGrade(element.getGrade());
-		Title title = new Title("Hn", "testValue");
+		Title title=new Title("Hn", "testValue");
 		title.setLocale("Hn");
 		title.setValue("testValue");
 		testSFLmsMapper.setDescription(title);
@@ -217,5 +214,4 @@ public class CustomDBWriterTest {
 
 		return listOfSfLMSMappersList;
 	}
-
 }

@@ -9,7 +9,6 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.yash.coursera.integration.components.LMSPostStatusComponent;
 import com.yash.coursera.integration.dao.CourseraAPIDataDao;
 import com.yash.coursera.integration.model.SFLmsMapper;
 
@@ -18,8 +17,6 @@ public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 
 	@Autowired
 	private CourseraAPIDataDao courseraAPIDataDao;
-	@Autowired
-	private LMSPostStatusComponent lmsPostStatusComponent;
 	private JobExecution jobExecution;
 	private String jobName;
 
@@ -45,9 +42,7 @@ public class CustomDBWriter implements ItemWriter<List<SFLmsMapper>> {
 		else if (jobName.equals("loadContentAPI"))
 			courseraAPIDataDao.insertContent(sfLMSMappers.get(0));
 		else 
-//			courseraAPIDataDao.insertStatus(sfLMSMappers.get(0));
-			lmsPostStatusComponent.postLMSCoursesStatus(sfLMSMappers.get(0));
-			
+			courseraAPIDataDao.insertStatus(sfLMSMappers.get(0));
 		}
 		catch (IndexOutOfBoundsException e) {
 			e.printStackTrace();
