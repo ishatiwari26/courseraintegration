@@ -29,8 +29,6 @@ public class LMSPostStatusComponent {
 
 	@Autowired
 	private LMSAuthorizationHelper lmsAuthorizationHelper;
-	private JSONArray lmsCourseMapperArray;
-	private JSONObject lmsCoursesPayload;
 
 	private String lmsAuthToken;
 
@@ -38,19 +36,15 @@ public class LMSPostStatusComponent {
 
 	private final Logger logger = LoggerFactory.getLogger(LMSPostStatusComponent.class);
 
-
-	LMSPostStatusComponent(LMSAuthorizationHelper lmsAuthorizationHelper,JSONArray lmsCourseMapperArray, JSONObject lmsCoursesPayload) {
-		this.lmsAuthorizationHelper = lmsAuthorizationHelper;
-		this.lmsCourseMapperArray = lmsCourseMapperArray;
-		this.lmsCoursesPayload = lmsCoursesPayload;
-	}
 	public void postLMSCoursesStatus(List<SFLmsMapper> mappers) {
 
 		if (!lmsAuthorizationHelper.isLMSAuthTokenValid()) {
-			 lmsAuthToken = lmsAuthorizationHelper.getLMSAuthToken();
-//			lmsAuthToken = "eyJzaWduYXR1cmUiOiJLU3k4aVZhRFlaZG1RUlMwaittTWFkbHErMUJIV0tHYkNqdEFndGRrWjg3eVlBM251Q2Fna3pENVRVaDJjTk03Z25TbU5NZWx1VG9odzNQV1FlTm91ZTdZS1JTOVBUeGdlcTh5SHcwaFhlZm9HQTNlN05tdklZS2pWSFBrZWpHU2hGUXFJdGNTTmhIMXZ2dUZDaHVCc1dSK0dHclN0V1N3WGFoN0ZYUzhzN2s9IiwidG9rZW5Db250ZW50Ijoie1wicGVyc29uR3VpZFwiOlwiRjQ3MjQxQzczOEE4NEY4M0I0Njg1MkI5MjU3QUE2NjdcIixcInVzZXJJZFwiOlwiY291cnNlcmFfaW50ZWdcIixcImNvbXBhbnlJZFwiOlwicGFydGxtczAwMzdcIixcImNsaWVudElkXCI6XCJwYXJ0bG1zMDAzN1wiLFwiaXNzdWVkQXRcIjoxNTU3NzMxODMwODQ4LFwiZXhwaXJlc0luXCI6MTgwMCxcImlzc3VlZEZvclwiOlwibGVhcm5pbmdfcHVibGljX2FwaVwiLFwidXNlclR5cGVcIjpcImFkbWluXCJ9In0=";
+			lmsAuthToken = lmsAuthorizationHelper.getLMSAuthToken();
+			// lmsAuthToken =
+			// "eyJzaWduYXR1cmUiOiJLU3k4aVZhRFlaZG1RUlMwaittTWFkbHErMUJIV0tHYkNqdEFndGRrWjg3eVlBM251Q2Fna3pENVRVaDJjTk03Z25TbU5NZWx1VG9odzNQV1FlTm91ZTdZS1JTOVBUeGdlcTh5SHcwaFhlZm9HQTNlN05tdklZS2pWSFBrZWpHU2hGUXFJdGNTTmhIMXZ2dUZDaHVCc1dSK0dHclN0V1N3WGFoN0ZYUzhzN2s9IiwidG9rZW5Db250ZW50Ijoie1wicGVyc29uR3VpZFwiOlwiRjQ3MjQxQzczOEE4NEY4M0I0Njg1MkI5MjU3QUE2NjdcIixcInVzZXJJZFwiOlwiY291cnNlcmFfaW50ZWdcIixcImNvbXBhbnlJZFwiOlwicGFydGxtczAwMzdcIixcImNsaWVudElkXCI6XCJwYXJ0bG1zMDAzN1wiLFwiaXNzdWVkQXRcIjoxNTU3NzMxODMwODQ4LFwiZXhwaXJlc0luXCI6MTgwMCxcImlzc3VlZEZvclwiOlwibGVhcm5pbmdfcHVibGljX2FwaVwiLFwidXNlclR5cGVcIjpcImFkbWluXCJ9In0=";
 		}
-
+		JSONArray lmsCourseMapperArray = new JSONArray();
+		JSONObject lmsCoursesPayload = new JSONObject();
 		mappers.forEach(mapper -> lmsCourseMapperArray.put(getLMSCourseStatusPayload(mapper)));
 
 		lmsCoursesPayload.put(GlobalConstants.STATUS_COURSE_STATUS_OBJECT, lmsCourseMapperArray);
